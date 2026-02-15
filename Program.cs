@@ -1,4 +1,6 @@
+using BeReadyForExam.Services.Implementations;
 using BeReadyForExam.Data;
+using BeReadyForExam.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -20,6 +22,8 @@ namespace BeReadyForExam
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
+            builder.Services.AddScoped<ISubjectService, SubjectService>();
+
 
             var app = builder.Build();
 
