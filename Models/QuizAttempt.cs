@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-namespace BeReadtForExam.Models
+namespace BeReadyForExam.Models
 {
     public class QuizAttempt
     {

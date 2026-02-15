@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-namespace SchoolIdentityDemo.Controllers; 
+namespace BeReadyForExam.Controllers; 
 [Authorize(Roles = "Teacher,Admin")]
 public class TeacherController : Controller
 { 

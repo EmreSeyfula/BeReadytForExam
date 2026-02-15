@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Options;
 using System.Collections.Generic;
-namespace BeReadtForExam.Models
+namespace BeReadyForExam.Models
 {
   
         public class Question

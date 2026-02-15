@@ -1,7 +1,6 @@
-﻿namespace BeReadtForExam.Models
+﻿namespace BeReadyForExam.Models
 {
-    public class Option
-    {
+   
         public class Option
         {
             public int Id { get; set; }
@@ -14,5 +13,4 @@
 
             public Question Question { get; set; }
         }
-    }
 }

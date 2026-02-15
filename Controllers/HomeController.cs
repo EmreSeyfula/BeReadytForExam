@@ -1,5 +1,5 @@
 using System.Diagnostics;
-using BeReaytForExam.Models;
+using BeReadyForExam.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BeReaytForExam.Controllers

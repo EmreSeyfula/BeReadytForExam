@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-namespace BeReadtForExam.Models
+namespace BeReadyForExam.Models
 {
     public class Topic
     {

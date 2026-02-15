@@ -1,4 +1,4 @@
-﻿namespace BeReadtForExam.Models
+﻿namespace BeReadyForExam.Models
 {
     public class AttemptAnswer
     {
