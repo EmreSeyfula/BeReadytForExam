@@ -1,8 +1,8 @@
-using BeReadtForExam.Data;
+using BeReadyForExam.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
-namespace BeReadtForExam
+namespace BeReadyForExam
 {
     public class Program
     {
@@ -50,7 +50,7 @@ namespace BeReadtForExam
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 await db.Database.MigrateAsync(); }
             await identityseed.SeedAsync(app.Services);
-            await BeReadtForExam.Data.identityseed.SeedAsync(app.Services);
+            await BeReadyForExam.Data.identityseed.SeedAsync(app.Services);
             app.Run();
         }
     }

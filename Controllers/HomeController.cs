@@ -1,8 +1,8 @@
 using System.Diagnostics;
-using BeReadtForExam.Models;
+using BeReaytForExam.Models;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BeReadtForExam.Controllers
+namespace BeReaytForExam.Controllers
 {
     public class HomeController : Controller
     {

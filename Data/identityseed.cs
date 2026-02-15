@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Identity;
-namespace BeReadtForExam.Data
+namespace BeReadyForExam.Data
 {
     public static class identityseed
     {

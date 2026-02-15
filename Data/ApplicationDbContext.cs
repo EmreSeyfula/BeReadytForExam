@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace BeReadtForExam.Data
+namespace BeReadyForExam.Data
 {
     public class ApplicationDbContext : IdentityDbContext
     {
