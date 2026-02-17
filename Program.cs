@@ -23,7 +23,7 @@ namespace BeReadyForExam
                 .AddEntityFrameworkStores<ApplicationDbContext>();
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<ISubjectService, SubjectService>();
-
+            builder.Services.AddScoped<ITopicService, TopicService>();
 
             var app = builder.Build();
 

@@ -9,6 +9,6 @@ namespace BeReadyForExam.Models
 
         public string Description { get; set; }
 
-        public ICollection<Topic> Topics { get; set; }
+        public ICollection<Topic>? Topics { get; set; }
     }
 }
