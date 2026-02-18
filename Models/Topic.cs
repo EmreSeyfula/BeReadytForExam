@@ -11,8 +11,8 @@ namespace BeReadyForExam.Models
 
         public bool IsActive { get; set; }
 
-        public Subject Subject { get; set; }
+        public Subject? Subject { get; set; }
 
-        public ICollection<Question> Questions { get; set; }
+        public ICollection<Question>? Questions { get; set; }
     }
 }

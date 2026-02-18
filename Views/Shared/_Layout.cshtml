@@ -26,6 +26,9 @@
                            <li class="nav-item">
                              <a class="nav-link text-dark" asp-controller="Subjects" asp-action="Index">Subjects</a>
                           </li>
+                          <li class="nav-item">
+                             <a class="nav-link text-dark" asp-controller="Topics" asp-action="Index">Topics</a>
+                          </li>
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
                             if (User.IsInRole("Admin"))

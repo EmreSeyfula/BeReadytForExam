@@ -1,18 +1,21 @@
 ﻿using BeReadyForExam.Models;
+using BeReadyForExam.Services.Implementations;
 using BeReadyForExam.Services.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
 namespace BeReadyForExam.Controllers
 {
     public class TopicsController : Controller
     {
        private readonly ITopicService _service;
+        private readonly ISubjectService _subjectService;
+        private ISubjectService? subjectService;
 
-            public TopicsController(ITopicService service) 
-            {
+        public TopicsController(ITopicService service)
+        {
                 _service = service;
-            }
+            _subjectService = subjectService;
+        }
             public async Task<IActionResult> Index()
             {
               var topics = await _service.GetAllAsync();

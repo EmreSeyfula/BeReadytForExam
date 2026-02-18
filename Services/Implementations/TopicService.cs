@@ -13,11 +13,15 @@ namespace BeReadyForExam.Services.Implementations
         }
         public async Task<List<Topic>> GetAllAsync()
         {
-            return await _context.Topics.Include(t => t.Subject).ToListAsync();
+            return await _context.Topics
+                .Include(t => t.Subject)
+                .ToListAsync();
         }
         public async Task<Topic> GetByIdAsync(int id)
         {
-            return await _context.Topics.Include(t => t.Subject).FirstOrDefaultAsync(t => t.Id == id);
+            return await _context.Topics
+                .Include(t => t.Subject)
+                .FirstOrDefaultAsync(t => t.Id == id);
         }
         public async Task CreateAsync(Topic topic)
         {

@@ -13,7 +13,7 @@ namespace BeReadyForExam.Models
 
             public bool IsActive { get; set; }
 
-            public Topic Topic { get; set; }
+            public Topic? Topic { get; set; }
 
             public ICollection<Option> Options { get; set; }
         }

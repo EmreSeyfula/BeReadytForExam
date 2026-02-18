@@ -1,0 +1,10 @@
+﻿@model BeReadyForExam.Models.Topic
+
+<h2>Delete Topic</h2>
+
+<p>Are you sure you want to delete @Model.Name?</p>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit">Delete</button>
+</form>

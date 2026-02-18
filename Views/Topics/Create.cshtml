@@ -1,0 +1,25 @@
+﻿@model BeReadyForExam.Models.Topic
+
+<h2 class="mb-4">Create Topic</h2>
+
+<div asp-validation-summary="All" class="text-danger"></div>
+
+    <form asp-action="Create" method="post">
+
+        <div class="form-group">
+            <label class="form-label">Name</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="form-group">
+            <label asp-for="SubjectId"></label>
+            <select asp-for="SubjectId" asp-items="ViewBag.Subjects" class="form-control">
+            <option value="">-- Select Subject --</option>
+    </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+
+    </form>
+</div>

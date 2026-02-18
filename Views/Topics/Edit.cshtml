@@ -1,0 +1,23 @@
+﻿@model BeReadyForExam.Models.Topic
+
+
+<h2 class="mb-4">Edit Topic</h2>
+
+<div class="card p-4 shadow-sm" style="max-width:500px;">
+    <form asp-action="Edit">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="mb-3">
+            <label class="form-label">Name</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Subject</label>
+            <select asp-for="SubjectId" asp-items="ViewBag.Subjects" class="form-select"></select>
+        </div>
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Back</a>
+    </form>
+</div>
