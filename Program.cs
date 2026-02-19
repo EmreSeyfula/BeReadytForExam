@@ -24,6 +24,7 @@ namespace BeReadyForExam
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<ISubjectService, SubjectService>();
             builder.Services.AddScoped<ITopicService, TopicService>();
+            builder.Services.AddScoped<IQuestionService, QuestionService>();
 
             var app = builder.Build();
 

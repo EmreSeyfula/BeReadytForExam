@@ -1,5 +1,6 @@
 ﻿using Microsoft.CodeAnalysis.Options;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 namespace BeReadyForExam.Models
 {
   
@@ -8,14 +9,14 @@ namespace BeReadyForExam.Models
             public int Id { get; set; }
 
             public int TopicId { get; set; }
-
+             [Required]    
             public string Text { get; set; }
 
             public bool IsActive { get; set; }
 
             public Topic? Topic { get; set; }
 
-            public ICollection<Option> Options { get; set; }
+            public ICollection<Option>? Options { get; set; }
         }
 }
 
