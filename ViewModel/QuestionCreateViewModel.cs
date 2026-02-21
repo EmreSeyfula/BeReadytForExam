@@ -8,6 +8,7 @@ namespace BeReadyForExam.ViewModel
         [Required]
         public string Text { get; set; }
 
+        public int Id { get; set; }
         public int TopicId { get; set; }
 
         public List<SelectListItem> Topics { get; set; } = new();
@@ -19,6 +20,7 @@ namespace BeReadyForExam.ViewModel
     {
         [Required]
         public string Text { get; set; }
+        public int Id { get; set; }
         public bool IsCorrect { get; set; }
     }
 }

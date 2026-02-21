@@ -23,7 +23,9 @@ namespace BeReadyForExam.Services.Implementations
 
         public async Task<Question> GetByIdAsync(int id)
         {
-            return await _context.Questions.FindAsync(id);
+            return await _context.Questions
+             .Include(q => q.Options)
+            .FirstOrDefaultAsync(q => q.Id == id);
         }
 
         public async Task CreateAsync(Question question)

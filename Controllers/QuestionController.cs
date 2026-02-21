@@ -65,7 +65,7 @@ namespace BeReadyForExam.Controllers
 
                 return View(model);
             }
-
+           
             var question = new Question
             {
                 Text = model.Text,
@@ -77,6 +77,11 @@ namespace BeReadyForExam.Controllers
                     IsCorrect = o.IsCorrect
                 }).ToList()
             };
+            if (!model.Options.Any(o => o.IsCorrect))
+            {
+                ModelState.AddModelError("", "Select at least one correct answer.");
+            }
+
 
             await _questionService.CreateAsync(question);
 
@@ -89,16 +94,66 @@ namespace BeReadyForExam.Controllers
             var question = await _questionService.GetByIdAsync(id);
             if (question == null) return NotFound();
 
-            return View(question);
+            var topics = await _topicService.GetAllAsync();
+
+            var vm = new QuestionCreateViewModel
+            {
+                Id = question.Id, 
+                Text = question.Text,
+                TopicId = question.TopicId,
+
+                Topics = (topics ?? new List<Topic>())
+            .Select(t => new SelectListItem
+            {
+                Value = t.Id.ToString(),
+                Text = t.Name
+            }).ToList(),
+
+                Options = (question.Options ?? new List<Option>())
+            .Select(o => new OptionInputModel
+            {
+                Id = o.Id,
+                Text = o.Text,
+                IsCorrect = o.IsCorrect
+            }).ToList()
+            };
+
+            return View(vm);
         }
 
        
         [HttpPost]
-        public async Task<IActionResult> Edit(Question question)
+        public async Task<IActionResult> Edit(QuestionCreateViewModel model)
         {
-            if (!ModelState.IsValid) return View(question);
+            if (!ModelState.IsValid)
+            {
+                var topics = await _topicService.GetAllAsync();
+                model.Topics = topics.Select(t => new SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = t.Name
+                }).ToList();
+
+                return View(model);
+            }
+
+            var question = new Question
+            {
+                Id = model.Id,
+                Text = model.Text,
+                TopicId = model.TopicId,
+                IsActive = true,
+                Options = model.Options.Select(o => new Option
+                {
+                    Id = o.Id,
+                    Text = o.Text,
+                    IsCorrect = o.IsCorrect,
+                    QuestionId = model.Id
+                }).ToList()
+            };
 
             await _questionService.UpdateAsync(question);
+
             return RedirectToAction(nameof(Index));
         }
 

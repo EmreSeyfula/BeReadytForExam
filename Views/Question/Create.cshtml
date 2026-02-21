@@ -1,6 +1,7 @@
 ﻿@using BeReadyForExam.ViewModel
 @model QuestionCreateViewModel
 
+<div asp-validation-summary="All" class="text-danger"></div>
 <div class="container mt-4">
     <div class="card shadow-lg rounded-4">
         <div class="card-header bg-dark text-white">
@@ -42,6 +43,7 @@
                                 </div>
 
                                 <div class="col-md-2 form-check mt-2">
+                                     <input type="hidden" name="Options[@i].IsCorrect" value="false" />
                                     <input type="checkbox"
                                            name="Options[@i].IsCorrect"
                                            class="form-check-input" />
