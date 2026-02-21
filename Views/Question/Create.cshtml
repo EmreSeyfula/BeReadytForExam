@@ -1,0 +1,120 @@
+﻿@using BeReadyForExam.ViewModel
+@model QuestionCreateViewModel
+
+<div class="container mt-4">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-header bg-dark text-white">
+            <h3>➕ Create Question</h3>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Create" method="post">
+
+                <!-- Question text -->
+                <div class="mb-3">
+                    <label class="form-label">Question</label>
+                    <input asp-for="Text" class="form-control" />
+                </div>
+
+                <!-- Topic dropdown -->
+                <div class="mb-4">
+                    <label class="form-label">Topic</label>
+                    <select asp-for="TopicId"
+                            asp-items="Model.Topics"
+                            class="form-select">
+                        <option value="">-- Select Topic --</option>
+                    </select>
+                </div>
+
+                <hr />
+
+                <h5 class="mb-3">Options</h5>
+
+                <div id="optionsContainer">
+                    @for (int i = 0; i < Model.Options.Count; i++)
+                    {
+                            <div class="row mb-2 option-row">
+                                <div class="col-md-8">
+                                    <input name="Options[@i].Text"
+                                           class="form-control"
+                                           placeholder="Option text" />
+                                </div>
+
+                                <div class="col-md-2 form-check mt-2">
+                                    <input type="checkbox"
+                                           name="Options[@i].IsCorrect"
+                                           class="form-check-input" />
+                                    <label class="form-check-label">
+                                        Correct
+                                    </label>
+                                </div>
+
+                                <div class="col-md-2">
+                                    <button type="button"
+                                            class="btn btn-danger remove-option">
+                                        ❌
+                                    </button>
+                                </div>
+                            </div>
+                    }
+                </div>
+
+                <button type="button"
+                        id="addOption"
+                        class="btn btn-secondary mt-2">
+                    ➕ Add Option
+                </button>
+
+                <hr />
+
+                <button type="submit" class="btn btn-success w-100">
+                    💾 Save Question
+                </button>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let optionIndex = @Model.Options.Count;
+
+        document.getElementById("addOption")
+            .addEventListener("click", function () {
+
+            const container = document.getElementById("optionsContainer");
+
+            const html = `
+            <div class="row mb-2 option-row">
+                <div class="col-md-8">
+                    <input name="Options[${optionIndex}].Text"
+                           class="form-control"
+                           placeholder="Option text" />
+                </div>
+
+                <div class="col-md-2 form-check mt-2">
+                    <input type="checkbox"
+                           name="Options[${optionIndex}].IsCorrect"
+                           class="form-check-input" />
+                    <label class="form-check-label">Correct</label>
+                </div>
+
+                <div class="col-md-2">
+                    <button type="button"
+                            class="btn btn-danger remove-option">❌</button>
+                </div>
+            </div>`;
+
+            container.insertAdjacentHTML("beforeend", html);
+            optionIndex++;
+        });
+
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-option")) {
+                e.target.closest(".option-row").remove();
+            }
+        });
+    </script>
+}

@@ -1,0 +1,38 @@
+﻿@model IEnumerable<BeReadyForExam.Models.Question>
+
+@{
+    ViewData["Title"] = "Questions";
+}
+
+<div class="container mt-4">
+    <div class="d-flex justify-content-between mb-3">
+        <h2>📚 Questions</h2>
+        <a asp-action="Create" class="btn btn-success">➕ Create Question</a>
+    </div>
+
+    <table class="table table-striped table-hover shadow-sm">
+        <thead class="table-dark">
+            <tr>
+                <th>Text</th>
+                <th>Topic</th>
+                <th width="220">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var q in Model)
+            {
+                    <tr>
+                        <td>@q.Text</td>
+                        <td>@q.Topic?.Name</td>
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@q.Id"
+                               class="btn btn-warning btn-sm">✏️ Edit</a>
+
+                            <a asp-action="Delete" asp-route-id="@q.Id"
+                               class="btn btn-danger btn-sm">🗑 Delete</a>
+                        </td>
+                    </tr>
+            }
+        </tbody>
+    </table>
+</div>

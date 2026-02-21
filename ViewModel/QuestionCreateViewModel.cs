@@ -17,6 +17,7 @@ namespace BeReadyForExam.ViewModel
 
     public class OptionInputModel
     {
+        [Required]
         public string Text { get; set; }
         public bool IsCorrect { get; set; }
     }

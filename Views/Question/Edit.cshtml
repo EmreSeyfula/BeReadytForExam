@@ -1,0 +1,47 @@
+﻿@model BeReadyForExam.ViewModel.QuestionCreateViewModel
+
+@{
+    ViewData["Title"] = "Edit Question";
+}
+
+<div class="container mt-4">
+    <div class="card shadow-lg rounded-4">
+        <div class="card-header bg-warning">
+            <h3>✏️ Edit Question</h3>
+        </div>
+
+        <div class="card-body">
+
+            <form asp-action="Edit" method="post">
+
+                <input type="hidden" asp-for="TopicId" />
+
+                <div class="mb-3">
+                    <label class="form-label">Question</label>
+                    <input asp-for="Text" class="form-control" />
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label">Topic</label>
+                    <select asp-for="TopicId"
+                            asp-items="Model.Topics"
+                            class="form-select">
+                    </select>
+                </div>
+
+                <button type="submit" class="btn btn-success w-100">
+                    💾 Update
+                </button>
+
+                <a asp-action="Index" class="btn btn-secondary w-100 mt-2">
+                    Back
+                </a>
+
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}
