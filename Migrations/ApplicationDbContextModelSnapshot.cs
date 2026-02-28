@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace BeReadyForExam.Data.Migrations
+namespace BeReadyForExam.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -30,13 +30,13 @@ namespace BeReadyForExam.Data.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ExamAttemptId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsCorrect")
                         .HasColumnType("bit");
 
                     b.Property<int>("QuestionId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("QuizAttemptId")
                         .HasColumnType("int");
 
                     b.Property<int>("SelectedOptionId")
@@ -44,9 +44,53 @@ namespace BeReadyForExam.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("QuizAttemptId");
+                    b.HasIndex("ExamAttemptId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("SelectedOptionId");
 
                     b.ToTable("AttemptAnswers");
+                });
+
+            modelBuilder.Entity("BeReadyForExam.Models.ExamAttempt", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CorrectCount")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("FinishedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double>("Grade")
+                        .HasColumnType("float");
+
+                    b.Property<double>("ScorePercent")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("StartedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TotalQuestions")
+                        .HasColumnType("int");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("ExamAttempts");
                 });
 
             modelBuilder.Entity("BeReadyForExam.Models.Option", b =>
@@ -97,46 +141,6 @@ namespace BeReadyForExam.Data.Migrations
                     b.HasIndex("TopicId");
 
                     b.ToTable("Questions");
-                });
-
-            modelBuilder.Entity("BeReadyForExam.Models.QuizAttempt", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CorrectCount")
-                        .HasColumnType("int");
-
-                    b.Property<DateTime?>("FinishedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<double>("Grade")
-                        .HasColumnType("float");
-
-                    b.Property<double>("ScorePercent")
-                        .HasColumnType("float");
-
-                    b.Property<DateTime>("StartedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("TopicId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("TotalQuestions")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserId")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TopicId");
-
-                    b.ToTable("QuizAttempts");
                 });
 
             modelBuilder.Entity("BeReadyForExam.Models.Subject", b =>
@@ -389,13 +393,40 @@ namespace BeReadyForExam.Data.Migrations
 
             modelBuilder.Entity("BeReadyForExam.Models.AttemptAnswer", b =>
                 {
-                    b.HasOne("BeReadyForExam.Models.QuizAttempt", "QuizAttempt")
+                    b.HasOne("BeReadyForExam.Models.ExamAttempt", "ExamAttempt")
                         .WithMany("AttemptAnswers")
-                        .HasForeignKey("QuizAttemptId")
+                        .HasForeignKey("ExamAttemptId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("QuizAttempt");
+                    b.HasOne("BeReadyForExam.Models.Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("BeReadyForExam.Models.Option", "SelectedOption")
+                        .WithMany()
+                        .HasForeignKey("SelectedOptionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("ExamAttempt");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("SelectedOption");
+                });
+
+            modelBuilder.Entity("BeReadyForExam.Models.ExamAttempt", b =>
+                {
+                    b.HasOne("BeReadyForExam.Models.Topic", "Topic")
+                        .WithMany()
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Topic");
                 });
 
             modelBuilder.Entity("BeReadyForExam.Models.Option", b =>
@@ -413,17 +444,6 @@ namespace BeReadyForExam.Data.Migrations
                 {
                     b.HasOne("BeReadyForExam.Models.Topic", "Topic")
                         .WithMany("Questions")
-                        .HasForeignKey("TopicId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Topic");
-                });
-
-            modelBuilder.Entity("BeReadyForExam.Models.QuizAttempt", b =>
-                {
-                    b.HasOne("BeReadyForExam.Models.Topic", "Topic")
-                        .WithMany()
                         .HasForeignKey("TopicId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -493,14 +513,14 @@ namespace BeReadyForExam.Data.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("BeReadyForExam.Models.ExamAttempt", b =>
+                {
+                    b.Navigation("AttemptAnswers");
+                });
+
             modelBuilder.Entity("BeReadyForExam.Models.Question", b =>
                 {
                     b.Navigation("Options");
-                });
-
-            modelBuilder.Entity("BeReadyForExam.Models.QuizAttempt", b =>
-                {
-                    b.Navigation("AttemptAnswers");
                 });
 
             modelBuilder.Entity("BeReadyForExam.Models.Subject", b =>

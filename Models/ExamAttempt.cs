@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 namespace BeReadyForExam.Models
 {
-    public class QuizAttempt
+    public class ExamAttempt
     {
         public int Id { get; set; }
 
@@ -24,6 +24,6 @@ namespace BeReadyForExam.Models
 
         public Topic Topic { get; set; }
 
-        public ICollection<AttemptAnswer> AttemptAnswers { get; set; }
+        public ICollection<AttemptAnswer>? AttemptAnswers { get; set; }
     }
 }
