@@ -1,6 +1,6 @@
-﻿namespace BeReadyForExam.ViewModel.Quiz
+﻿namespace BeReadyForExam.ViewModel.Exam
 {
-    public class StartQuizViewModel
+    public class StartExamViewModel
     {
         public int TopicId { get; set; }
         public string TopicName { get; set; }
