@@ -1,36 +1,77 @@
 ﻿@model BeReadyForExam.Models.Exam
 
-<h2>Create Exam</h2>
+@{
+    ViewData["Title"] = "Create Exam";
+}
 
-<form asp-action="Create" method="post">
-
-    <div class="mb-3">
-        <label>Title</label>
-        <input asp-for="Title" class="form-control" />
+<div class="container mt-4" style="max-width: 720px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Create Exam</h2>
+        <a asp-action="Index" class="btn btn-outline-secondary">⬅ Back to Exams</a>
     </div>
 
-    <div class="mb-3">
-        <label>Topic</label>
-        <select asp-for="TopicId"
-                asp-items="ViewBag.Topics"
-                class="form-select">
-        </select>
-    </div>
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-    <div class="mb-3">
-        <label>Questions Count</label>
-        <input asp-for="QuestionsCount" class="form-control" />
-    </div>
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
 
-    <div class="form-check">
-        <input asp-for="RandomizeQuestions" class="form-check-input" />
-        <label class="form-check-label">Randomize Questions</label>
-    </div>
+                <div class="mb-3">
+                    <label asp-for="Title" class="form-label">Title</label>
+                    <input asp-for="Title" class="form-control" placeholder="e.g. Math Final Test" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
 
-    <div class="form-check">
-        <input asp-for="IsActive" class="form-check-input" />
-        <label class="form-check-label">Is Active</label>
-    </div>
+                <div class="mb-3">
+                    <label asp-for="TopicId" class="form-label">Topic</label>
+                    <select asp-for="TopicId" asp-items="ViewBag.Topics" class="form-select">
+                       <option value="0">-- Select Topic --</option>
+                    </select>
+                    <span asp-validation-for="TopicId" class="text-danger"></span>
+                </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Save</button>
-</form>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="QuestionsCount" class="form-label">Questions Count</label>
+                        <input asp-for="QuestionsCount" class="form-control" />
+                        <span asp-validation-for="QuestionsCount" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="TimeLimitMinutes" class="form-label">Time Limit (minutes)</label>
+                        <input asp-for="TimeLimitMinutes" class="form-control" />
+                        <span asp-validation-for="TimeLimitMinutes" class="text-danger"></span>
+                        <div class="form-text">Leave empty for no time limit.</div>
+                    </div>
+                </div>
+
+                <div class="mt-3">
+                    <label asp-for="Description" class="form-label">Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="3"
+                              placeholder="Optional description for students..."></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+
+                <div class="form-check mt-3">
+                    <input asp-for="RandomizeQuestions" class="form-check-input" />
+                    <label asp-for="RandomizeQuestions" class="form-check-label">Randomize Questions</label>
+                </div>
+
+                <div class="form-check mt-2">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label">Is Active</label>
+                </div>
+
+                <div class="d-flex gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary">Save</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+        <partial name="_ValidationScriptsPartial" />
+}

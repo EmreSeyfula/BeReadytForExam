@@ -2,18 +2,45 @@
 
 @{
     ViewData["Title"] = "Questions";
+    var examId = ViewBag.ExamId as int?;
 }
 
 <div class="container mt-4">
-    <div class="d-flex justify-content-between mb-3">
-        <h2>📚 Questions</h2>
-        <a asp-action="Create" class="btn btn-success">➕ Create Question</a>
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h2 class="mb-0">📚 Questions</h2>
+
+            @if (examId != null)
+            {
+                    <div class="text-muted small">
+                        Filtered by ExamId: <strong>@examId</strong>
+                    </div>
+            }
+        </div>
+
+        <div class="d-flex gap-2">
+            @if (examId != null)
+            {
+                    <a asp-action="Create" asp-route-examId="@examId" class="btn btn-success">
+                        ➕ Create Question
+                    </a>
+
+                    <a asp-action="Index" class="btn btn-outline-secondary">
+                        Show All
+                    </a>
+            }
+            else
+            {
+                    <a asp-action="Create" class="btn btn-success">➕ Create Question</a>
+            }
+        </div>
     </div>
 
     <table class="table table-striped table-hover shadow-sm">
         <thead class="table-dark">
             <tr>
                 <th>Text</th>
+                <th>Exam</th>
                 <th>Topic</th>
                 <th width="220">Actions</th>
             </tr>
@@ -23,13 +50,11 @@
             {
                     <tr>
                         <td>@q.Text</td>
-                        <td>@q.Exam.Topic?.Name</td>
+                        <td>@q.Exam?.Title</td>
+                        <td>@q.Exam?.Topic?.Name</td>
                         <td>
-                            <a asp-action="Edit" asp-route-id="@q.Id"
-                               class="btn btn-warning btn-sm">✏️ Edit</a>
-
-                            <a asp-action="Delete" asp-route-id="@q.Id"
-                               class="btn btn-danger btn-sm">🗑 Delete</a>
+                            <a asp-action="Edit" asp-route-id="@q.Id" class="btn btn-warning btn-sm">✏️ Edit</a>
+                            <a asp-action="Delete" asp-route-id="@q.Id" class="btn btn-danger btn-sm">🗑 Delete</a>
                         </td>
                     </tr>
             }

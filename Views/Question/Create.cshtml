@@ -12,19 +12,19 @@
 
             <form asp-action="Create" method="post">
 
-                <!-- Question text -->
+               
                 <div class="mb-3">
                     <label class="form-label">Question</label>
                     <input asp-for="Text" class="form-control" />
                 </div>
 
-                <!-- Topic dropdown -->
+              
                 <div class="mb-4">
-                    <label class="form-label">Topic</label>
+                    <label class="form-label">Test</label>
                     <select asp-for="ExamId"
                             asp-items="Model.Exams"
                             class="form-select">
-                        <option value="">-- Select Topic --</option>
+                        <option value="0">-- Select Test --</option>
                     </select>
                 </div>
 
@@ -43,9 +43,10 @@
                                 </div>
 
                                 <div class="col-md-2 form-check mt-2">
-                                     <input type="hidden" name="Options[@i].IsCorrect" value="false" />
+                                     
                                     <input type="checkbox"
                                            name="Options[@i].IsCorrect"
+                                                 value="true"
                                            class="form-check-input" />
                                     <label class="form-check-label">
                                         Correct
