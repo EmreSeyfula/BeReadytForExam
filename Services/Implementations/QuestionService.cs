@@ -17,7 +17,7 @@ namespace BeReadyForExam.Services.Implementations
         public async Task<List<Question>> GetAllAsync()
         {
             return await _context.Questions
-                .Include(q => q.Topic)
+                .Include(q => q.Exam)
                 .ToListAsync();
         }
 
