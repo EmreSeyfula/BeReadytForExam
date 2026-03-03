@@ -25,33 +25,44 @@ namespace BeReadyForExam.Controllers
 
         public async Task<IActionResult> Index()
         {
-            var exams = await _examService.GetAllAsync();
+            var exams = await _examService.GetTeacherExamListAsync();
             return View(exams);
         }
 
-   
+        public async Task<IActionResult> Available()
+        {
+            var exams = await _examService.GetAvailableExamsAsync();
+            return View(exams);
+        }
 
-        
-            public async Task<IActionResult> Create()
+
+        public async Task<IActionResult> Create()
         {
             await LoadTopicsAsync();
             return View(new Exam { IsActive = true, RandomizeQuestions = true, QuestionsCount = 10 });
         }
-        
+
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Exam exam)
         {
             if (!ModelState.IsValid)
             {
-                await LoadTopicsAsync(exam.TopicId);  
+                var errors = ModelState
+            .Where(x => x.Value.Errors.Count > 0)
+            .Select(x => new { Field = x.Key, Errors = x.Value.Errors.Select(e => e.ErrorMessage).ToList() })
+            .ToList();
+
+                await LoadTopicsAsync(exam.TopicId);
                 return View(exam);
             }
 
             exam.CreatedAt = DateTime.UtcNow;
-            await _examService.CreateAsync(exam);
 
-            return RedirectToAction(nameof(Index));
+            var examId = await _examService.CreateAsync(exam);
+            
+            return RedirectToAction("Index", "Question", new { examId });
         }
 
         private async Task LoadTopicsAsync(int? selectedTopicId = null)
@@ -108,15 +119,13 @@ namespace BeReadyForExam.Controllers
             await _examService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
-    
 
 
-        public async Task<IActionResult> Start(int topicId)
+
+        public async Task<IActionResult> Start(int examId)
         {
             var userId = _userManager.GetUserId(User);
-
-            var attemptId = await _examService.StartExamAsync(topicId, userId);
-
+            var attemptId = await _examService.StartExamAsync(examId, userId);
             return RedirectToAction("Take", new { attemptId });
         }
 

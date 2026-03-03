@@ -21,37 +21,35 @@ namespace BeReadyForExam.Controllers
 
         
 
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index( int? examId)
         {
-            var questions = await _questionService.GetAllAsync();
+            var questions = await _questionService.GetAllAsync(examId);
+            ViewBag.ExamId = examId;
             return View(questions);
         }
 
 
 
-        public async Task<IActionResult> Create()
+        public async Task<IActionResult> Create(int? examId)
         {
             var exams = await _examService.GetAllActiveExamsAsync();
 
             var vm = new QuestionCreateViewModel
             {
+                ExamId = examId ?? 0,
                 Exams = exams.Select(e => new SelectListItem
                 {
                     Value = e.Id.ToString(),
-                    Text = e.Title
+                    Text = e.Title,
+                    Selected = examId.HasValue && e.Id == examId.Value
                 }).ToList(),
-
-                Options = new List<OptionInputModel>
-                {
-                    new OptionInputModel(),
-                    new OptionInputModel()
-                }
+                Options = new List<OptionInputModel> { new(), new() }
             };
 
             return View(vm);
         }
 
-       
+
         [HttpPost]
         public async Task<IActionResult> Create(QuestionCreateViewModel model)
         {
@@ -89,7 +87,7 @@ namespace BeReadyForExam.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        // ================= EDIT GET =================
+
 
         public async Task<IActionResult> Edit(int id)
         {
@@ -121,7 +119,7 @@ namespace BeReadyForExam.Controllers
             return View(vm);
         }
 
-        // ================= EDIT POST =================
+       
 
         [HttpPost]
         public async Task<IActionResult> Edit(QuestionCreateViewModel model)
