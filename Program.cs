@@ -3,7 +3,7 @@ using BeReadyForExam.Data;
 using BeReadyForExam.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using static BeReadyForExam.Services.Implementations.ExamServices;
+using static BeReadyForExam.Services.Implementations.ExamService;
 
 namespace BeReadyForExam
 {

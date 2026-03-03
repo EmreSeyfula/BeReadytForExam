@@ -3,7 +3,7 @@
     public class TakeExamViewModel
     {
         public int AttemptId { get; set; }
-        public int TopicId { get; set; }
+        public int ExamId { get; set; }
 
         public List<ExamQuestionVM> Questions { get; set; } = new();
     }

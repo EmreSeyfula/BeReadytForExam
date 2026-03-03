@@ -1,0 +1,36 @@
+﻿@model BeReadyForExam.Models.Exam
+
+<h2>Create Exam</h2>
+
+<form asp-action="Create" method="post">
+
+    <div class="mb-3">
+        <label>Title</label>
+        <input asp-for="Title" class="form-control" />
+    </div>
+
+    <div class="mb-3">
+        <label>Topic</label>
+        <select asp-for="TopicId"
+                asp-items="ViewBag.Topics"
+                class="form-select">
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label>Questions Count</label>
+        <input asp-for="QuestionsCount" class="form-control" />
+    </div>
+
+    <div class="form-check">
+        <input asp-for="RandomizeQuestions" class="form-check-input" />
+        <label class="form-check-label">Randomize Questions</label>
+    </div>
+
+    <div class="form-check">
+        <input asp-for="IsActive" class="form-check-input" />
+        <label class="form-check-label">Is Active</label>
+    </div>
+
+    <button type="submit" class="btn btn-primary mt-3">Save</button>
+</form>

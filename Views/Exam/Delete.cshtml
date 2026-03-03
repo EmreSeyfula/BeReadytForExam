@@ -1,0 +1,10 @@
+﻿@model BeReadyForExam.Models.Exam
+
+<h2>Delete Exam</h2>
+
+<h4>Are you sure you want to delete @Model.Title ?</h4>
+
+<form asp-action="DeleteConfirmed" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Delete</button>
+    </form>

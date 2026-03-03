@@ -1,0 +1,31 @@
+﻿
+@model IEnumerable<BeReadyForExam.Models.Exam>
+
+<h2>Exams</h2>
+
+<a asp-action="Create" class="btn btn-success mb-3">Create Exam</a>
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Topic</th>
+            <th>Active</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var exam in Model)
+        {
+            <tr>
+                <td>@exam.Title</td>
+                <td>@exam.Topic?.Name</td>
+                <td>@exam.IsActive</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@exam.Id">Edit</a> |
+                    <a asp-action="Delete" asp-route-id="@exam.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
