@@ -35,6 +35,7 @@ namespace BeReadyForExam.Data
         public DbSet<Option> Options { get; set; }
         public DbSet<ExamAttempt> ExamAttempts { get; set; }
         public DbSet<AttemptAnswer> AttemptAnswers { get; set; }
+        public DbSet<Exam> Exams { get; set; }
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
         {

@@ -8,13 +8,12 @@ namespace BeReadyForExam.Models
         {
             public int Id { get; set; }
 
-            public int TopicId { get; set; }
-             [Required]    
+        public int ExamId { get; set; }
+        public Exam Exam { get; set; }
+        [Required]    
             public string Text { get; set; }
 
             public bool IsActive { get; set; }
-
-            public Topic? Topic { get; set; }
 
             public ICollection<Option>? Options { get; set; }
         }

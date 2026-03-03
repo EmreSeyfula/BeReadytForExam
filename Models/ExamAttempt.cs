@@ -8,8 +8,8 @@ namespace BeReadyForExam.Models
 
         public string UserId { get; set; }
 
-        public int TopicId { get; set; }
-
+        public int ExamId { get; set; }
+       
         public DateTime StartedAt { get; set; }
 
         public DateTime? FinishedAt { get; set; }
@@ -22,7 +22,7 @@ namespace BeReadyForExam.Models
 
         public double Grade { get; set; }
 
-        public Topic Topic { get; set; }
+        public Exam Exam { get; set; }
 
         public ICollection<AttemptAnswer>? AttemptAnswers { get; set; }
     }

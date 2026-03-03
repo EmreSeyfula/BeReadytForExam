@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BeReadyForExam.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20260228112751_Initial")]
+    [Migration("20260301155305_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -56,6 +56,48 @@ namespace BeReadyForExam.Migrations
                     b.ToTable("AttemptAnswers");
                 });
 
+            modelBuilder.Entity("BeReadyForExam.Models.Exam", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .HasMaxLength(1000)
+                        .HasColumnType("nvarchar(1000)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("QuestionsCount")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("RandomizeQuestions")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("TimeLimitMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
+
+                    b.ToTable("Exams");
+                });
+
             modelBuilder.Entity("BeReadyForExam.Models.ExamAttempt", b =>
                 {
                     b.Property<int>("Id")
@@ -65,6 +107,9 @@ namespace BeReadyForExam.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<int>("CorrectCount")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExamId")
                         .HasColumnType("int");
 
                     b.Property<DateTime?>("FinishedAt")
@@ -79,9 +124,6 @@ namespace BeReadyForExam.Migrations
                     b.Property<DateTime>("StartedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<int>("TopicId")
-                        .HasColumnType("int");
-
                     b.Property<int>("TotalQuestions")
                         .HasColumnType("int");
 
@@ -91,7 +133,7 @@ namespace BeReadyForExam.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("TopicId");
+                    b.HasIndex("ExamId");
 
                     b.ToTable("ExamAttempts");
                 });
@@ -129,6 +171,9 @@ namespace BeReadyForExam.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("ExamId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -136,10 +181,12 @@ namespace BeReadyForExam.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("TopicId")
+                    b.Property<int?>("TopicId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("ExamId");
 
                     b.HasIndex("TopicId");
 
@@ -421,7 +468,7 @@ namespace BeReadyForExam.Migrations
                     b.Navigation("SelectedOption");
                 });
 
-            modelBuilder.Entity("BeReadyForExam.Models.ExamAttempt", b =>
+            modelBuilder.Entity("BeReadyForExam.Models.Exam", b =>
                 {
                     b.HasOne("BeReadyForExam.Models.Topic", "Topic")
                         .WithMany()
@@ -430,6 +477,17 @@ namespace BeReadyForExam.Migrations
                         .IsRequired();
 
                     b.Navigation("Topic");
+                });
+
+            modelBuilder.Entity("BeReadyForExam.Models.ExamAttempt", b =>
+                {
+                    b.HasOne("BeReadyForExam.Models.Exam", "Exam")
+                        .WithMany("Attempts")
+                        .HasForeignKey("ExamId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Exam");
                 });
 
             modelBuilder.Entity("BeReadyForExam.Models.Option", b =>
@@ -445,13 +503,17 @@ namespace BeReadyForExam.Migrations
 
             modelBuilder.Entity("BeReadyForExam.Models.Question", b =>
                 {
-                    b.HasOne("BeReadyForExam.Models.Topic", "Topic")
+                    b.HasOne("BeReadyForExam.Models.Exam", "Exam")
                         .WithMany("Questions")
-                        .HasForeignKey("TopicId")
+                        .HasForeignKey("ExamId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Topic");
+                    b.HasOne("BeReadyForExam.Models.Topic", null)
+                        .WithMany("Questions")
+                        .HasForeignKey("TopicId");
+
+                    b.Navigation("Exam");
                 });
 
             modelBuilder.Entity("BeReadyForExam.Models.Topic", b =>
@@ -514,6 +576,13 @@ namespace BeReadyForExam.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BeReadyForExam.Models.Exam", b =>
+                {
+                    b.Navigation("Attempts");
+
+                    b.Navigation("Questions");
                 });
 
             modelBuilder.Entity("BeReadyForExam.Models.ExamAttempt", b =>
