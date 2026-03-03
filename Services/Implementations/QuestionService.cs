@@ -14,11 +14,18 @@ namespace BeReadyForExam.Services.Implementations
             _context = context;
         }
 
-        public async Task<List<Question>> GetAllAsync()
+        public async Task<List<Question>> GetAllAsync(int? examId)
         {
-            return await _context.Questions
+            var query = _context.Questions
                 .Include(q => q.Exam)
-                .ToListAsync();
+                    .ThenInclude(e => e.Topic)
+                .Include(q => q.Options)
+                .AsQueryable();
+
+            if (examId.HasValue)
+                query = query.Where(q => q.ExamId == examId.Value);
+
+            return await query.ToListAsync();
         }
 
         public async Task<Question> GetByIdAsync(int id)

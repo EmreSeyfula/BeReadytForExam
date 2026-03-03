@@ -6,9 +6,9 @@ namespace BeReadyForExam.Models
     {
         public int Id { get; set; }
 
-        [Required]
+        [Range(1, int.MaxValue, ErrorMessage = "Please select a topic.")]
         public int TopicId { get; set; }
-        public Topic Topic { get; set; }
+        public Topic? Topic { get; set; }
 
         [Required]
         [MaxLength(200)]

@@ -22,6 +22,15 @@ namespace BeReadyForExam.Services.Implementations
                 .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
         }
+        public async Task<List<Exam>> GetAvailableExamsAsync()
+        {
+            return await _context.Exams
+                .Include(e => e.Topic)
+                .Where(e => e.IsActive)
+                .OrderBy(e => e.Topic.Name)
+                .ThenBy(e => e.Title)
+                .ToListAsync();
+        }
 
         public async Task<Exam> GetByIdAsync(int id)
         {
@@ -30,10 +39,11 @@ namespace BeReadyForExam.Services.Implementations
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 
-        public async Task CreateAsync(Exam exam)
+        public async Task<int> CreateAsync(Exam exam)
         {
             _context.Exams.Add(exam);
             await _context.SaveChangesAsync();
+            return exam.Id;
         }
 
         public async Task UpdateAsync(Exam exam)
@@ -188,5 +198,23 @@ namespace BeReadyForExam.Services.Implementations
                 }).ToList()
             };
         }
+
+        public async Task<List<TeacherExamRowViewModel>> GetTeacherExamListAsync()
+        {
+            return await _context.Exams
+                .Include(e => e.Topic)
+                .OrderByDescending(e => e.CreatedAt)
+                .Select(e => new TeacherExamRowViewModel
+                {
+                    Id = e.Id,
+                    Title = e.Title,
+                    TopicName = e.Topic.Name,
+                    IsActive = e.IsActive,
+                    ConfiguredQuestionsCount = e.QuestionsCount,
+                    ActualQuestionsInBank = _context.Questions.Count(q => q.ExamId == e.Id)
+                })
+                .ToListAsync();
+        }
+
     }
 }

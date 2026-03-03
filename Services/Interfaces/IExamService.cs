@@ -7,7 +7,7 @@ namespace BeReadyForExam.Services.Interfaces
     {
         Task<List<Exam>> GetAllAsync();
         Task<Exam> GetByIdAsync(int id);
-        Task CreateAsync(Exam exam);
+        Task<int> CreateAsync(Exam exam);
         Task UpdateAsync(Exam exam);
         Task DeleteAsync(int id);
         Task<int> StartExamAsync(int examId, string userId);
@@ -16,5 +16,7 @@ namespace BeReadyForExam.Services.Interfaces
         Task<ExamResultViewModel> GetResultAsync(int attemptId, string userId);
         Task<MyExamHistoryViewModel> GetMyHistoryAsync(string userId);
         Task<List<Exam>> GetAllActiveExamsAsync();
+        Task<List<Exam>> GetAvailableExamsAsync();
+        Task<List<TeacherExamRowViewModel>> GetTeacherExamListAsync();
     }
 }
