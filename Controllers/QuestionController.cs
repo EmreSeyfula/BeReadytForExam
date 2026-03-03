@@ -9,15 +9,17 @@ namespace BeReadyForExam.Controllers
     public class QuestionController : Controller
     {
         private readonly IQuestionService _questionService;
-        private readonly ITopicService _topicService;
+        private readonly IExamService _examService;
 
         public QuestionController(
             IQuestionService questionService,
-            ITopicService topicService)
+            IExamService examService)
         {
             _questionService = questionService;
-            _topicService = topicService;
+            _examService = examService;
         }
+
+        
 
         public async Task<IActionResult> Index()
         {
@@ -25,20 +27,20 @@ namespace BeReadyForExam.Controllers
             return View(questions);
         }
 
-     
+
+
         public async Task<IActionResult> Create()
         {
-            var topics = await _topicService.GetAllAsync();
+            var exams = await _examService.GetAllActiveExamsAsync();
 
             var vm = new QuestionCreateViewModel
             {
-                Topics = topics.Select(t => new SelectListItem
+                Exams = exams.Select(e => new SelectListItem
                 {
-                    Value = t.Id.ToString(),
-                    Text = t.Name
+                    Value = e.Id.ToString(),
+                    Text = e.Title
                 }).ToList(),
 
-       
                 Options = new List<OptionInputModel>
                 {
                     new OptionInputModel(),
@@ -49,27 +51,31 @@ namespace BeReadyForExam.Controllers
             return View(vm);
         }
 
-        
+       
         [HttpPost]
         public async Task<IActionResult> Create(QuestionCreateViewModel model)
         {
+            if (!model.Options.Any(o => o.IsCorrect))
+            {
+                ModelState.AddModelError("", "Select at least one correct answer.");
+            }
+
             if (!ModelState.IsValid)
             {
-                // ВРЪЩАМЕ dropdown пак
-                var topics = await _topicService.GetAllAsync();
-                model.Topics = topics.Select(t => new SelectListItem
+                var exams = await _examService.GetAllActiveExamsAsync();
+                model.Exams = exams.Select(e => new SelectListItem
                 {
-                    Value = t.Id.ToString(),
-                    Text = t.Name
+                    Value = e.Id.ToString(),
+                    Text = e.Title
                 }).ToList();
 
                 return View(model);
             }
-           
+
             var question = new Question
             {
                 Text = model.Text,
-                TopicId = model.TopicId,
+                ExamId = model.ExamId,
                 IsActive = true,
                 Options = model.Options.Select(o => new Option
                 {
@@ -77,61 +83,56 @@ namespace BeReadyForExam.Controllers
                     IsCorrect = o.IsCorrect
                 }).ToList()
             };
-            if (!model.Options.Any(o => o.IsCorrect))
-            {
-                ModelState.AddModelError("", "Select at least one correct answer.");
-            }
-
 
             await _questionService.CreateAsync(question);
 
             return RedirectToAction(nameof(Index));
         }
 
-      
+        // ================= EDIT GET =================
+
         public async Task<IActionResult> Edit(int id)
         {
             var question = await _questionService.GetByIdAsync(id);
             if (question == null) return NotFound();
 
-            var topics = await _topicService.GetAllAsync();
+            var exams = await _examService.GetAllActiveExamsAsync();
 
             var vm = new QuestionCreateViewModel
             {
-                Id = question.Id, 
+                Id = question.Id,
                 Text = question.Text,
-                TopicId = question.TopicId,
+                ExamId = question.ExamId,
 
-                Topics = (topics ?? new List<Topic>())
-            .Select(t => new SelectListItem
-            {
-                Value = t.Id.ToString(),
-                Text = t.Name
-            }).ToList(),
+                Exams = exams.Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(),
+                    Text = e.Title
+                }).ToList(),
 
-                Options = (question.Options ?? new List<Option>())
-            .Select(o => new OptionInputModel
-            {
-                Id = o.Id,
-                Text = o.Text,
-                IsCorrect = o.IsCorrect
-            }).ToList()
+                Options = question.Options.Select(o => new OptionInputModel
+                {
+                    Id = o.Id,
+                    Text = o.Text,
+                    IsCorrect = o.IsCorrect
+                }).ToList()
             };
 
             return View(vm);
         }
 
-       
+        // ================= EDIT POST =================
+
         [HttpPost]
         public async Task<IActionResult> Edit(QuestionCreateViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                var topics = await _topicService.GetAllAsync();
-                model.Topics = topics.Select(t => new SelectListItem
+                var exams = await _examService.GetAllActiveExamsAsync();
+                model.Exams = exams.Select(e => new SelectListItem
                 {
-                    Value = t.Id.ToString(),
-                    Text = t.Name
+                    Value = e.Id.ToString(),
+                    Text = e.Title
                 }).ToList();
 
                 return View(model);
@@ -141,7 +142,7 @@ namespace BeReadyForExam.Controllers
             {
                 Id = model.Id,
                 Text = model.Text,
-                TopicId = model.TopicId,
+                ExamId = model.ExamId,
                 IsActive = true,
                 Options = model.Options.Select(o => new Option
                 {
@@ -157,7 +158,8 @@ namespace BeReadyForExam.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-     
+       
+
         public async Task<IActionResult> Delete(int id)
         {
             var question = await _questionService.GetByIdAsync(id);
@@ -166,11 +168,9 @@ namespace BeReadyForExam.Controllers
             return View(question);
         }
 
-      
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-           
             await _questionService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
         }
