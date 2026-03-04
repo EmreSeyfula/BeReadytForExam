@@ -32,7 +32,7 @@ namespace BeReadyForExam
 
             if (app.Environment.IsDevelopment())
             {
-            // Configure the HTTP request pipeline.
+                // Configure the HTTP request pipeline.
                 app.UseMigrationsEndPoint();
             }
             else
@@ -52,12 +52,14 @@ namespace BeReadyForExam
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
             app.MapRazorPages();
-            using (var scope = app.Services.CreateScope()) 
-            { 
+            using (var scope = app.Services.CreateScope())
+            {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
-                await db.Database.MigrateAsync(); }
-            await identityseed.SeedAsync(app.Services);
-            await BeReadyForExam.Data.identityseed.SeedAsync(app.Services);
+                await db.Database.MigrateAsync();
+
+                await identityseed.SeedAsync(scope.ServiceProvider);
+            }
+
             app.Run();
         }
     }

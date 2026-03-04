@@ -29,23 +29,21 @@
                           <li class="nav-item">
                              <a class="nav-link text-dark" asp-controller="Topics" asp-action="Index">Topics</a>
                           </li>
-                          <li class="nav-item">
-                              <a class="nav-link" asp-controller="Exam" asp-action="Available">Exams</a>
-                          </li>
+                          
                         @if (User.Identity?.IsAuthenticated ?? false)
                         {
                             if (User.IsInRole("Admin"))
                             {
                                 <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Admin</a></li>
+                                <a class="nav-link text-dark" asp-controller="Exam" asp-action="Index">Admin</a></li>
                             }
                             if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
                             {
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Teacher" asp-action="Index">Teacher</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Exam" asp-action="Index">Teacher Exams</a></li>
                             }
                             if (User.IsInRole("Student") || User.IsInRole("Admin"))
                             {
-                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Student" asp-action="Index">Student</a></li>
+                                <li class="nav-item"><a class="nav-link text-dark" asp-controller="Exam" asp-action="Available">Exams</a></li>
                             }
                         }
                         <li class="nav-item">
