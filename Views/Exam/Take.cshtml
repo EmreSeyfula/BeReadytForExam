@@ -1,0 +1,46 @@
+﻿@model BeReadyForExam.ViewModel.Exam.TakeExamViewModel
+
+@{
+    ViewData["Title"] = "Take Exam";
+}
+
+<div class="container mt-4" style="max-width: 900px;">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">📝 Take Exam</h2>
+        <a asp-action="Available" class="btn btn-outline-secondary">⬅ Back to Exams</a>
+    </div>
+
+    <form asp-action="Submit" method="post">
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="AttemptId" value="@Model.AttemptId" />
+
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+                <div class="card shadow-sm mb-3">
+                    <div class="card-body">
+                        <div class="fw-semibold mb-2">
+                        @(i + 1). @Model.Questions[i].Text
+                        </div>
+
+                        <input type="hidden" name="Answers[@i].QuestionId" value="@Model.Questions[i].QuestionId" />
+
+                    @foreach (var opt in Model.Questions[i].Options)
+                    {
+                                <div class="form-check">
+                                    <input class="form-check-input"
+                                           type="radio"
+                                           name="Answers[@i].SelectedOptionId"
+                                           value="@opt.OptionId"
+                                           required />
+                                    <label class="form-check-label">@opt.Text</label>
+                                </div>
+                    }
+                    </div>
+                </div>
+        }
+
+        <button type="submit" class="btn btn-success w-100">
+            ✅ Submit Exam
+        </button>
+    </form>
+</div>
