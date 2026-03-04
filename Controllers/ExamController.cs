@@ -22,7 +22,7 @@ namespace BeReadyForExam.Controllers
             _topicService = topicService;
             _userManager = userManager;
         }
-
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Index()
         {
             var exams = await _examService.GetTeacherExamListAsync();
@@ -35,14 +35,14 @@ namespace BeReadyForExam.Controllers
             return View(exams);
         }
 
-
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Create()
         {
             await LoadTopicsAsync();
             return View(new Exam { IsActive = true, RandomizeQuestions = true, QuestionsCount = 10 });
         }
 
-
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Exam exam)
@@ -80,7 +80,7 @@ namespace BeReadyForExam.Controllers
         }
 
 
-
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var exam = await _examService.GetByIdAsync(id);
@@ -89,7 +89,7 @@ namespace BeReadyForExam.Controllers
             await LoadTopicsAsync(exam.TopicId);
             return View(exam);
         }
-
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPost]
         public async Task<IActionResult> Edit(Exam exam)
         {
@@ -103,8 +103,8 @@ namespace BeReadyForExam.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-      
 
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var exam = await _examService.GetByIdAsync(id);
@@ -112,7 +112,7 @@ namespace BeReadyForExam.Controllers
 
             return View(exam);
         }
-
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {

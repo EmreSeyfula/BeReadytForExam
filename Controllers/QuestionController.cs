@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using BeReadyForExam.Services.Interfaces;
 using BeReadyForExam.Models;
 using BeReadyForExam.ViewModel;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeReadyForExam.Controllers
 {
@@ -19,8 +20,8 @@ namespace BeReadyForExam.Controllers
             _examService = examService;
         }
 
-        
 
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Index( int? examId)
         {
             var questions = await _questionService.GetAllAsync(examId);
@@ -29,7 +30,7 @@ namespace BeReadyForExam.Controllers
         }
 
 
-
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Create(int? examId)
         {
             var exams = await _examService.GetAllActiveExamsAsync();
@@ -49,7 +50,7 @@ namespace BeReadyForExam.Controllers
             return View(vm);
         }
 
-
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPost]
         public async Task<IActionResult> Create(QuestionCreateViewModel model)
         {
@@ -88,7 +89,7 @@ namespace BeReadyForExam.Controllers
         }
 
 
-
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var question = await _questionService.GetByIdAsync(id);
@@ -119,8 +120,8 @@ namespace BeReadyForExam.Controllers
             return View(vm);
         }
 
-       
 
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPost]
         public async Task<IActionResult> Edit(QuestionCreateViewModel model)
         {
@@ -156,8 +157,8 @@ namespace BeReadyForExam.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-       
 
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var question = await _questionService.GetByIdAsync(id);
@@ -165,7 +166,7 @@ namespace BeReadyForExam.Controllers
 
             return View(question);
         }
-
+        [Authorize(Roles = "Teacher,Admin")]
         [HttpPost, ActionName("Delete")]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
