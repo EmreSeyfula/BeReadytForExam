@@ -41,11 +41,58 @@ namespace BeReadyForExam.Services.Implementations
             await _context.SaveChangesAsync();
         }
 
-        public async Task UpdateAsync(Question question)
+
+        public async Task UpdateAsync(Question updated)
         {
-            _context.Questions.Update(question);
+            var dbQuestion = await _context.Questions
+                .Include(q => q.Options)
+                .FirstOrDefaultAsync(q => q.Id == updated.Id);
+
+            if (dbQuestion == null)
+                throw new InvalidOperationException("Question not found.");
+
+            dbQuestion.Text = updated.Text;
+            dbQuestion.ExamId = updated.ExamId;
+            dbQuestion.IsActive = updated.IsActive;
+
+           
+            var keepIds = updated.Options
+                .Where(o => o.Id > 0)
+                .Select(o => o.Id)
+                .ToHashSet();
+
+         
+            var toRemove = dbQuestion.Options
+                .Where(o => o.Id > 0 && !keepIds.Contains(o.Id))
+                .ToList();
+
+            _context.Options.RemoveRange(toRemove);
+
+           
+            foreach (var opt in updated.Options)
+            {
+                if (opt.Id > 0)
+                {
+                    var dbOpt = dbQuestion.Options.FirstOrDefault(o => o.Id == opt.Id);
+                    if (dbOpt != null)
+                    {
+                        dbOpt.Text = opt.Text;
+                        dbOpt.IsCorrect = opt.IsCorrect;
+                    }
+                }
+                else
+                {
+                    dbQuestion.Options.Add(new Option
+                    {
+                        Text = opt.Text,
+                        IsCorrect = opt.IsCorrect
+                    });
+                }
+            }
+
             await _context.SaveChangesAsync();
         }
+
 
         public async Task DeleteAsync(int id)
         {
