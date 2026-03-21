@@ -75,7 +75,7 @@ namespace BeReadyForExam.Controllers
             {
                 Text = model.Text,
                 ExamId = model.ExamId,
-                IsActive = true,
+                IsActive = model.IsActive,
                 Options = model.Options.Select(o => new Option
                 {
                     Text = o.Text,
@@ -139,7 +139,7 @@ namespace BeReadyForExam.Controllers
                 Id = model.Id,
                 Text = model.Text,
                 ExamId = model.ExamId,
-                IsActive = true,
+                IsActive = model.IsActive,
                 Options = model.Options.Select(o => new Option
                 {
                     Id = o.Id,

@@ -1,6 +1,6 @@
 ﻿using BeReadyForExam.Models;
 using BeReadyForExam.ViewModel.Exam;
-
+using BeReadyForExam.ViewModel.Teacher;
 namespace BeReadyForExam.Services.Interfaces
 {
     public interface IExamService
@@ -18,5 +18,6 @@ namespace BeReadyForExam.Services.Interfaces
         Task<List<Exam>> GetAllActiveExamsAsync();
         Task<List<Exam>> GetAvailableExamsAsync();
         Task<List<TeacherExamRowViewModel>> GetTeacherExamListAsync();
+        Task<TeacherDashboardViewModel> GetTeacherDashboardAsync();
     }
 }

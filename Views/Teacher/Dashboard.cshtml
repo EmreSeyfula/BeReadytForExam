@@ -1,0 +1,116 @@
+﻿@model BeReadyForExam.ViewModel.Teacher.TeacherDashboardViewModel
+
+@{
+    ViewData["Title"] = "Teacher Dashboard";
+}
+
+<div class="container mt-4">
+    <h2 class="mb-4">Teacher Dashboard</h2>
+
+    <div class="d-flex gap-2 mb-4">
+    <a asp-controller="Exam" asp-action="Index" class="btn btn-primary">Manage Exams</a>
+    <a asp-controller="Question" asp-action="Index" class="btn btn-outline-primary">Questions</a>
+    <a asp-controller="Topics" asp-action="Index" class="btn btn-outline-secondary">Topics</a>
+    <a asp-controller="Subjects" asp-action="Index" class="btn btn-outline-dark">Subjects</a>
+</div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <div class="text-muted">Total Exams</div>
+                    <div class="fs-3 fw-bold">@Model.TotalExams</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <div class="text-muted">Active Exams</div>
+                    <div class="fs-3 fw-bold">@Model.ActiveExams</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <div class="text-muted">Questions</div>
+                    <div class="fs-3 fw-bold">@Model.TotalQuestions</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <div class="text-muted">Attempts</div>
+                    <div class="fs-3 fw-bold">@Model.TotalAttempts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <div class="text-muted">Completed</div>
+                    <div class="fs-3 fw-bold">@Model.CompletedAttempts</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-lg-2">
+            <div class="card shadow-sm text-center">
+                <div class="card-body">
+                    <div class="text-muted">Avg Score</div>
+                    <div class="fs-3 fw-bold">@Model.AverageScorePercent.ToString("F1")%</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h5 class="mb-0">Recent Attempts</h5>
+        </div>
+        <div class="card-body p-0">
+            <table class="table table-striped mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Exam</th>
+                        <th>User</th>
+                        <th>Score</th>
+                        <th>Started</th>
+                        <th>Finished</th>
+                        <th>Result</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.RecentAttempts)
+                    {
+                        <tr>
+                            <td>@item.ExamTitle</td>
+                            <td>@item.UserId</td>
+                            <td>@item.CorrectCount / @item.TotalQuestions (@item.ScorePercent.ToString("F1")%)</td>
+                            <td>@item.StartedAt.ToLocalTime().ToString("g")</td>
+                            <td>@(item.FinishedAt.HasValue ? item.FinishedAt.Value.ToLocalTime().ToString("g") : "-")</td>
+                            <td>
+                                <a asp-controller="Exam" asp-action="Result" asp-route-attemptId="@item.AttemptId" class="btn btn-sm btn-outline-primary">
+                                    View
+                                </a>
+                            </td>
+                        </tr>
+                    }
+
+                    @if (!Model.RecentAttempts.Any())
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-4">No attempts yet.</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

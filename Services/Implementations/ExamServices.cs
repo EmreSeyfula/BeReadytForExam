@@ -3,6 +3,7 @@ using BeReadyForExam.Models;
 using BeReadyForExam.Services.Interfaces;
 using BeReadyForExam.ViewModel.Exam;
 using Microsoft.EntityFrameworkCore;
+using BeReadyForExam.ViewModel.Teacher;
 
 namespace BeReadyForExam.Services.Implementations
 {
@@ -306,7 +307,47 @@ namespace BeReadyForExam.Services.Implementations
                 .ToListAsync();
         }
 
-        
+        public async Task<TeacherDashboardViewModel> GetTeacherDashboardAsync()
+        {
+            var totalExams = await _context.Exams.CountAsync();
+            var activeExams = await _context.Exams.CountAsync(e => e.IsActive);
+            var totalQuestions = await _context.Questions.CountAsync();
+            var totalAttempts = await _context.ExamAttempts.CountAsync();
+            var completedAttempts = await _context.ExamAttempts.CountAsync(a => a.FinishedAt != null);
+
+            var averageScorePercent = await _context.ExamAttempts
+                .Where(a => a.FinishedAt != null)
+                .Select(a => (double?)a.ScorePercent)
+                .AverageAsync() ?? 0;
+
+            var recentAttempts = await _context.ExamAttempts
+                .Include(a => a.Exam)
+                .OrderByDescending(a => a.StartedAt)
+                .Take(10)
+                .Select(a => new TeacherRecentAttemptVM
+                {
+                    AttemptId = a.Id,
+                    ExamTitle = a.Exam.Title,
+                    UserId = a.UserId,
+                    TotalQuestions = a.TotalQuestions,
+                    CorrectCount = a.CorrectCount,
+                    ScorePercent = a.ScorePercent,
+                    StartedAt = a.StartedAt,
+                    FinishedAt = a.FinishedAt
+                })
+                .ToListAsync();
+
+            return new TeacherDashboardViewModel
+            {
+                TotalExams = totalExams,
+                ActiveExams = activeExams,
+                TotalQuestions = totalQuestions,
+                TotalAttempts = totalAttempts,
+                CompletedAttempts = completedAttempts,
+                AverageScorePercent = averageScorePercent,
+                RecentAttempts = recentAttempts
+            };
+        }
 
     }
 }

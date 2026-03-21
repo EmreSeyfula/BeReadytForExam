@@ -1,93 +1,156 @@
-﻿@model BeReadyForExam.ViewModel.QuestionCreateViewModel
+﻿@using BeReadyForExam.ViewModel
+@model QuestionCreateViewModel
 
+@{
+    ViewData["Title"] = "Edit Question";
+}
 <div asp-validation-summary="All" class="text-danger"></div>
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
+<div class="container mt-4" style="max-width: 900px;">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3 class="mb-0">Edit Question</h3>
+        </div>
+        <div class="card-body">
+            <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-    <div class="mb-3">
-        <label class="form-label">Question</label>
-        <input asp-for="Text" class="form-control" />
-    </div>
+            <form asp-action="Edit" method="post">
+                @Html.AntiForgeryToken()
 
-    <div class="mb-4">
-        <label class="form-label">Test</label>
-        <select asp-for="ExamId" asp-items="Model.Exams" class="form-select">
-            <option value="0">-- Select Test --</option>
-        </select>
-    </div>
+                <input type="hidden" asp-for="Id" />
 
-    <hr />
-    <h5 class="mb-3">Options</h5>
-
-    <div id="optionsContainer">
-        @for (int i = 0; i < Model.Options.Count; i++)
-        {
-                <div class="row mb-2 option-row">
-                    <input type="hidden" name="Options[@i].Id" value="@Model.Options[i].Id" />
-
-                    <div class="col-md-8">
-                        <input name="Options[@i].Text"
-                               value="@Model.Options[i].Text"
-                               class="form-control"
-                               placeholder="Option text" />
-                    </div>
-
-                    <div class="col-md-2 form-check mt-2">
-                        <input type="checkbox"
-                               name="Options[@i].IsCorrect"
-                               value="true"
-                               class="form-check-input"
-                    @(Model.Options[i].IsCorrect ? "checked" : "") />
-                        <label class="form-check-label">Correct</label>
-                    </div>
-
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger remove-option">❌</button>
-                    </div>
+                <div class="mb-3">
+                    <label asp-for="Text" class="form-label">Question text</label>
+                    <input asp-for="Text" class="form-control" />
+                    <span asp-validation-for="Text" class="text-danger"></span>
                 </div>
-        }
+
+                <div class="mb-3">
+                    <label asp-for="ExamId" class="form-label">Test</label>
+                    <select asp-for="ExamId" asp-items="Model.Exams" class="form-select">
+                        <option value="0">-- Select Test --</option>
+                    </select>
+                    <span asp-validation-for="ExamId" class="text-danger"></span>
+                </div>
+
+                <div class="form-check form-switch mb-4">
+                    <input asp-for="IsActive" class="form-check-input" />
+                    <label asp-for="IsActive" class="form-check-label">Active question</label>
+                </div>
+
+                <hr />
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Options</h5>
+                    <button type="button" id="addOption" class="btn btn-outline-secondary btn-sm">
+                        Add option
+                    </button>
+                </div>
+
+                <div id="optionsContainer">
+                    @for (int i = 0; i < Model.Options.Count; i++)
+                    {
+                            <div class="row g-2 align-items-center mb-2 option-row">
+                                <input type="hidden" name="Options[@i].Id" value="@Model.Options[i].Id" />
+
+                                <div class="col-md-8">
+                                    <input name="Options[@i].Text"
+                                           value="@Model.Options[i].Text"
+                                           class="form-control"
+                                           placeholder="Option text" />
+                                </div>
+
+                                <div class="col-md-2">
+                                    <div class="form-check mt-2">
+                                        <input type="hidden" name="Options[@i].IsCorrect" value="false" />
+                                        <input type="checkbox"
+                                               name="Options[@i].IsCorrect"
+                                               value="true"
+                                               class="form-check-input"
+                                    @(Model.Options[i].IsCorrect ? "checked" : "") />
+                                        <label class="form-check-label">Correct</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-2 text-end">
+                                    <button type="button" class="btn btn-outline-danger remove-option">Remove</button>
+                                </div>
+                            </div>
+                    }
+                </div>
+
+                <hr />
+
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-success">Save Changes</button>
+                    <a asp-action="Index" asp-route-examId="@Model.ExamId" class="btn btn-secondary">Back</a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <button type="button" id="addOption" class="btn btn-secondary mt-2">➕ Add Option</button>
-
-    <hr />
-    <button type="submit" class="btn btn-success w-100">💾 Save Changes</button>
-</form>
+</div>
 
 @section Scripts {
-    <script>
-        let optionIndex = @Model.Options.Count;
+        <partial name="_ValidationScriptsPartial" />
 
-        document.getElementById("addOption").addEventListener("click", function () {
-            const container = document.getElementById("optionsContainer");
+        <script>
+            const optionsContainer = document.getElementById("optionsContainer");
+            const addOptionBtn = document.getElementById("addOption");
 
-            const html = `
-            <div class="row mb-2 option-row">
-                <input type="hidden" name="Options[${optionIndex}].Id" value="0" />
+            function reindexOptions() {
+                const rows = optionsContainer.querySelectorAll(".option-row");
 
-                <div class="col-md-8">
-                    <input name="Options[${optionIndex}].Text" class="form-control" placeholder="Option text" />
-                </div>
+                rows.forEach((row, index) => {
+                    const hiddenId = row.querySelector('input[type="hidden"][name*=".Id"]');
+                    const textInput = row.querySelector('input[type="text"]');
+                    const hiddenFalse = row.querySelector('input[type="hidden"][name*=".IsCorrect"]');
+                    const checkbox = row.querySelector('input[type="checkbox"]');
 
-                <div class="col-md-2 form-check mt-2">
-                    <input type="checkbox" name="Options[${optionIndex}].IsCorrect" value="true" class="form-check-input" />
-                    <label class="form-check-label">Correct</label>
-                </div>
-
-                <div class="col-md-2">
-                    <button type="button" class="btn btn-danger remove-option">❌</button>
-                </div>
-            </div>`;
-
-            container.insertAdjacentHTML("beforeend", html);
-            optionIndex++;
-        });
-
-        document.addEventListener("click", function (e) {
-            if (e.target.classList.contains("remove-option")) {
-                e.target.closest(".option-row").remove();
+                    if (hiddenId) hiddenId.name = `Options[${index}].Id`;
+                    if (textInput) textInput.name = `Options[${index}].Text`;
+                    if (hiddenFalse) hiddenFalse.name = `Options[${index}].IsCorrect`;
+                    if (checkbox) checkbox.name = `Options[${index}].IsCorrect`;
+                });
             }
-        });
-    </script>
+
+            addOptionBtn.addEventListener("click", function () {
+                const index = optionsContainer.querySelectorAll(".option-row").length;
+
+                const html = `
+                    <div class="row g-2 align-items-center mb-2 option-row">
+                        <input type="hidden" name="Options[${index}].Id" value="0" />
+
+                        <div class="col-md-8">
+                            <input name="Options[${index}].Text"
+                                   class="form-control"
+                                   placeholder="Option text" />
+                        </div>
+
+                        <div class="col-md-2">
+                            <div class="form-check mt-2">
+                                <input type="hidden" name="Options[${index}].IsCorrect" value="false" />
+                                <input type="checkbox"
+                                       name="Options[${index}].IsCorrect"
+                                       value="true"
+                                       class="form-check-input" />
+                                <label class="form-check-label">Correct</label>
+                            </div>
+                        </div>
+
+                        <div class="col-md-2 text-end">
+                            <button type="button" class="btn btn-outline-danger remove-option">Remove</button>
+                        </div>
+                    </div>
+                `;
+
+                optionsContainer.insertAdjacentHTML("beforeend", html);
+            });
+
+            document.addEventListener("click", function (e) {
+                if (e.target.classList.contains("remove-option")) {
+                    e.target.closest(".option-row").remove();
+                    reindexOptions();
+                }
+            });
+        </script>
 }
