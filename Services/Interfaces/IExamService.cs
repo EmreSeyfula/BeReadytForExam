@@ -11,9 +11,9 @@ namespace BeReadyForExam.Services.Interfaces
         Task UpdateAsync(Exam exam);
         Task DeleteAsync(int id);
         Task<int> StartExamAsync(int examId, string userId);
-        Task<TakeExamViewModel> GetExamAsync(int attemptId);
-        Task SubmitExamAsync(SubmitExamViewModel model);
-        Task<ExamResultViewModel> GetResultAsync(int attemptId, string userId);
+        Task<TakeExamViewModel> GetExamAsync(int attemptId, string userId, bool canAccessAllAttempts = false);
+        Task SubmitExamAsync(SubmitExamViewModel model, string userId, bool canAccessAllAttempts = false);
+        Task<ExamResultViewModel> GetResultAsync(int attemptId, string userId, bool canAccessAllAttempts = false);
         Task<MyExamHistoryViewModel> GetMyHistoryAsync(string userId);
         Task<List<Exam>> GetAllActiveExamsAsync();
         Task<List<Exam>> GetAvailableExamsAsync();

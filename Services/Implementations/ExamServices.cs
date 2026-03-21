@@ -8,13 +8,30 @@ namespace BeReadyForExam.Services.Implementations
 {
     public class ExamService : IExamService
     {
-        private readonly ApplicationDbContext _context;
+
+      
 
         public ExamService(ApplicationDbContext context)
         {
             _context = context;
         }
 
+        private async Task<ExamAttempt> GetAccessibleAttemptAsync(int attemptId, string userId, bool canAccessAllAttempts)
+        {
+            var attempt = await _context.ExamAttempts
+                .Include(a => a.Exam)
+                .FirstOrDefaultAsync(a => a.Id == attemptId);
+
+            if (attempt == null)
+                throw new InvalidOperationException("Attempt not found.");
+
+            if (!canAccessAllAttempts && attempt.UserId != userId)
+                throw new UnauthorizedAccessException("You do not have access to this attempt.");
+
+            return attempt;
+        }
+
+        private readonly ApplicationDbContext _context;
         public async Task<List<Exam>> GetAllAsync()
         {
             return await _context.Exams
@@ -22,6 +39,7 @@ namespace BeReadyForExam.Services.Implementations
                 .OrderByDescending(e => e.CreatedAt)
                 .ToListAsync();
         }
+
         public async Task<List<Exam>> GetAvailableExamsAsync()
         {
             return await _context.Exams
@@ -82,10 +100,28 @@ namespace BeReadyForExam.Services.Implementations
                 .Where(q => q.ExamId == examId && q.IsActive)
                 .ToListAsync();
 
+            if (!questions.Any())
+                throw new InvalidOperationException("This exam has no active questions.");
+
+            if (exam.RandomizeQuestions)
+            {
+                questions = questions
+                    .OrderBy(q => Guid.NewGuid())
+                    .ToList();
+            }
+
+            if (exam.QuestionsCount > 0 && questions.Count > exam.QuestionsCount)
+            {
+                questions = questions
+                    .Take(exam.QuestionsCount)
+                    .ToList();
+            }
+
             var attempt = new ExamAttempt
             {
                 UserId = userId,
                 ExamId = examId,
+                StartedAt = DateTime.UtcNow,
                 TotalQuestions = questions.Count
             };
 
@@ -95,38 +131,90 @@ namespace BeReadyForExam.Services.Implementations
             return attempt.Id;
         }
 
-        public async Task<TakeExamViewModel> GetExamAsync(int attemptId)
+
+        public async Task<TakeExamViewModel> GetExamAsync(int attemptId, string userId, bool canAccessAllAttempts = false)
         {
-            var attempt = await _context.ExamAttempts
-                .Include(a => a.Exam)
-                .FirstOrDefaultAsync(a => a.Id == attemptId);
+            var attempt = await GetAccessibleAttemptAsync(attemptId, userId, canAccessAllAttempts);
 
             var questions = await _context.Questions
-                .Where(q => q.ExamId == attempt.ExamId)
+                .Where(q => q.ExamId == attempt.ExamId && q.IsActive)
                 .Include(q => q.Options)
                 .ToListAsync();
+
+            if (attempt.Exam.RandomizeQuestions)
+            {
+                questions = questions
+                    .OrderBy(q => q.Id ^ attempt.Id)
+                    .ToList();
+            }
+
+            if (attempt.Exam.QuestionsCount > 0 && questions.Count > attempt.TotalQuestions)
+            {
+                questions = questions
+                    .Take(attempt.TotalQuestions)
+                    .ToList();
+            }
+
+            var deadlineUtc = attempt.Exam.TimeLimitMinutes.HasValue
+                ? attempt.StartedAt.AddMinutes(attempt.Exam.TimeLimitMinutes.Value)
+                : (DateTime?)null;
+
+            var secondsRemaining = deadlineUtc.HasValue
+                ? Math.Max(0, (int)(deadlineUtc.Value - DateTime.UtcNow).TotalSeconds)
+                : (int?)null;
 
             return new TakeExamViewModel
             {
                 AttemptId = attempt.Id,
                 ExamId = attempt.ExamId,
+                StartedAt = attempt.StartedAt,
+                TimeLimitMinutes = attempt.Exam.TimeLimitMinutes,
+                DeadlineUtc = deadlineUtc,
+                SecondsRemaining = secondsRemaining,
+                IsExpired = secondsRemaining.HasValue && secondsRemaining.Value <= 0,
                 Questions = questions.Select(q => new ExamQuestionVM
                 {
                     QuestionId = q.Id,
                     Text = q.Text,
-                    Options = q.Options.Select(o => new ExamOptionVM
-                    {
-                        OptionId = o.Id,
-                        Text = o.Text
-                    }).ToList()
+                    Options = q.Options!
+                        .OrderBy(o => o.Id)
+                        .Select(o => new ExamOptionVM
+                        {
+                            OptionId = o.Id,
+                            Text = o.Text
+                        }).ToList()
                 }).ToList()
             };
         }
 
-        public async Task SubmitExamAsync(SubmitExamViewModel model)
+        public async Task SubmitExamAsync(SubmitExamViewModel model, string userId, bool canAccessAllAttempts = false)
         {
-            var attempt = await _context.ExamAttempts
-                .FirstOrDefaultAsync(a => a.Id == model.AttemptId);
+            var attempt = await GetAccessibleAttemptAsync(model.AttemptId, userId, canAccessAllAttempts);
+
+            if (attempt.FinishedAt.HasValue)
+                return;
+
+            var exam = attempt.Exam;
+
+            if (exam.TimeLimitMinutes.HasValue)
+            {
+                var deadlineUtc = attempt.StartedAt.AddMinutes(exam.TimeLimitMinutes.Value);
+                if (DateTime.UtcNow > deadlineUtc)
+                {
+                    attempt.FinishedAt = DateTime.UtcNow;
+                    await _context.SaveChangesAsync();
+                    return;
+                }
+            }
+
+            var existingAnswers = await _context.AttemptAnswers
+                .Where(a => a.ExamAttemptId == attempt.Id)
+                .ToListAsync();
+
+            if (existingAnswers.Any())
+            {
+                _context.AttemptAnswers.RemoveRange(existingAnswers);
+            }
 
             int correct = 0;
 
@@ -134,6 +222,9 @@ namespace BeReadyForExam.Services.Implementations
             {
                 var option = await _context.Options
                     .FirstOrDefaultAsync(o => o.Id == answer.SelectedOptionId);
+
+                if (option == null)
+                    continue;
 
                 var attemptAnswer = new AttemptAnswer
                 {
@@ -150,19 +241,17 @@ namespace BeReadyForExam.Services.Implementations
             }
 
             attempt.CorrectCount = correct;
-            attempt.ScorePercent = (double)correct / attempt.TotalQuestions * 100;
-            attempt.Grade = 2 + (attempt.ScorePercent / 100) * 4;
+            attempt.ScorePercent = attempt.TotalQuestions == 0 ? 0 : (double)correct / attempt.TotalQuestions * 100;
+            attempt.Grade = 2 + (attempt.ScorePercent / 100.0) * 4;
             attempt.FinishedAt = DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
         }
 
-        public async Task<ExamResultViewModel> GetResultAsync(int attemptId, string userId)
+        public async Task<ExamResultViewModel> GetResultAsync(int attemptId, string userId, bool canAccessAllAttempts = false)
         {
-            var attempt = await _context.ExamAttempts
-                .Include(a => a.Exam)
-                .FirstOrDefaultAsync(a => a.Id == attemptId);
 
+            var attempt = await GetAccessibleAttemptAsync(attemptId, userId, canAccessAllAttempts = false);
             return new ExamResultViewModel
             {
                 AttemptId = attempt.Id,
@@ -179,9 +268,10 @@ namespace BeReadyForExam.Services.Implementations
         public async Task<MyExamHistoryViewModel> GetMyHistoryAsync(string userId)
         {
             var attempts = await _context.ExamAttempts
-                .Include(a => a.Exam)
-                .Where(a => a.UserId == userId)
-                .ToListAsync();
+                  .Include(a => a.Exam)
+                  .Where(a => a.UserId == userId)
+                  .OrderByDescending(a => a.StartedAt)
+                  .ToListAsync();
 
             return new MyExamHistoryViewModel
             {
@@ -215,6 +305,8 @@ namespace BeReadyForExam.Services.Implementations
                 })
                 .ToListAsync();
         }
+
+        
 
     }
 }

@@ -55,14 +55,15 @@ namespace BeReadyForExam.Services.Implementations
             dbQuestion.ExamId = updated.ExamId;
             dbQuestion.IsActive = updated.IsActive;
 
-           
+            updated.Options ??= new List<Option>();
+
             var keepIds = updated.Options
                 .Where(o => o.Id > 0)
                 .Select(o => o.Id)
                 .ToHashSet();
 
          
-            var toRemove = dbQuestion.Options
+            var toRemove = dbQuestion.Options!
                 .Where(o => o.Id > 0 && !keepIds.Contains(o.Id))
                 .ToList();
 
