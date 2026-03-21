@@ -6,9 +6,10 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-
+using System.Security.Claims;
 namespace BeReadyForExam.Controllers
 {
+
     public class ExamController : Controller
     {
         private readonly IExamService _examService;
@@ -28,7 +29,7 @@ namespace BeReadyForExam.Controllers
             var exams = await _examService.GetTeacherExamListAsync();
             return View(exams);
         }
-
+        [Authorize]
         public async Task<IActionResult> Available()
         {
             var exams = await _examService.GetAvailableExamsAsync();
@@ -39,7 +40,7 @@ namespace BeReadyForExam.Controllers
         public async Task<IActionResult> Create()
         {
             await LoadTopicsAsync();
-            return View(new Exam { IsActive = true, RandomizeQuestions = true, QuestionsCount = 10 });
+            return View(new Exam { IsActive = true, RandomizeQuestions = true, QuestionsCount = 5 });
         }
 
         [Authorize(Roles = "Teacher,Admin")]
@@ -121,32 +122,42 @@ namespace BeReadyForExam.Controllers
         }
 
 
-
+        [Authorize]
         public async Task<IActionResult> Start(int examId)
         {
             var userId = _userManager.GetUserId(User);
             var attemptId = await _examService.StartExamAsync(examId, userId);
             return RedirectToAction("Take", new { attemptId });
         }
-
+        [Authorize]
         public async Task<IActionResult> Take(int attemptId)
         {
-            var exam = await _examService.GetExamAsync(attemptId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var canAccessAllAttempts = User.IsInRole("Teacher") || User.IsInRole("Admin");
+
+            var exam = await _examService.GetExamAsync(attemptId, userId, canAccessAllAttempts);
             return View(exam);
         }
 
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> Submit(SubmitExamViewModel model)
         {
-            await _examService.SubmitExamAsync(model);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var canAccessAllAttempts = User.IsInRole("Teacher") || User.IsInRole("Admin");
+
+            await _examService.SubmitExamAsync(model, userId, canAccessAllAttempts);
             return RedirectToAction("Result", new { attemptId = model.AttemptId });
         }
 
-        [Authorize] 
+        [Authorize]
+        [Authorize]
         public async Task<IActionResult> Result(int attemptId)
         {
-            var userId = _userManager.GetUserId(User);
-            var vm = await _examService.GetResultAsync(attemptId, userId);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var canAccessAllAttempts = User.IsInRole("Teacher") || User.IsInRole("Admin");
+
+            var vm = await _examService.GetResultAsync(attemptId, userId, canAccessAllAttempts);
             return View(vm);
         }
 

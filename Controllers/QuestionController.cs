@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 
 namespace BeReadyForExam.Controllers
 {
+    [Authorize(Roles = "Teacher,Admin")]
     public class QuestionController : Controller
     {
         private readonly IQuestionService _questionService;
@@ -54,20 +55,19 @@ namespace BeReadyForExam.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(QuestionCreateViewModel model)
         {
+            
+
             if (!model.Options.Any(o => o.IsCorrect))
             {
                 ModelState.AddModelError("", "Select at least one correct answer.");
             }
 
+            NormalizeOptions(model);
+            ValidateQuestionModel(model);
+
             if (!ModelState.IsValid)
             {
-                var exams = await _examService.GetAllActiveExamsAsync();
-                model.Exams = exams.Select(e => new SelectListItem
-                {
-                    Value = e.Id.ToString(),
-                    Text = e.Title
-                }).ToList();
-
+                await LoadExamsAsync(model);
                 return View(model);
             }
 
@@ -85,7 +85,7 @@ namespace BeReadyForExam.Controllers
 
             await _questionService.CreateAsync(question);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new {examId = model.ExamId});
         }
 
 
@@ -125,15 +125,12 @@ namespace BeReadyForExam.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(QuestionCreateViewModel model)
         {
+            NormalizeOptions(model);
+            ValidateQuestionModel(model);
+
             if (!ModelState.IsValid)
             {
-                var exams = await _examService.GetAllActiveExamsAsync();
-                model.Exams = exams.Select(e => new SelectListItem
-                {
-                    Value = e.Id.ToString(),
-                    Text = e.Title
-                }).ToList();
-
+                await LoadExamsAsync(model);
                 return View(model);
             }
 
@@ -172,6 +169,42 @@ namespace BeReadyForExam.Controllers
         {
             await _questionService.DeleteAsync(id);
             return RedirectToAction(nameof(Index));
+        }
+
+        private void ValidateQuestionModel(QuestionCreateViewModel model)
+        {
+            if (model.Options.Count < 2)
+            {
+                ModelState.AddModelError("", "Question must have at least 2 options.");
+            }
+
+            if (!model.Options.Any(o => o.IsCorrect))
+            {
+                ModelState.AddModelError("", "Select at least one correct answer.");
+            }
+        }
+        private static void NormalizeOptions(QuestionCreateViewModel model)
+        {
+            model.Options = (model.Options ?? new List<OptionInputModel>())
+                .Where(o => !string.IsNullOrWhiteSpace(o.Text))
+                .Select(o => new OptionInputModel
+                {
+                    Id = o.Id,
+                    Text = o.Text.Trim(),
+                    IsCorrect = o.IsCorrect
+                })
+                .ToList();
+        }
+        private async Task LoadExamsAsync(QuestionCreateViewModel model)
+        {
+            var exams = await _examService.GetAllActiveExamsAsync();
+
+            model.Exams = exams.Select(e => new SelectListItem
+            {
+                Value = e.Id.ToString(),
+                Text = e.Title,
+                Selected = e.Id == model.ExamId
+            }).ToList();
         }
     }
 }

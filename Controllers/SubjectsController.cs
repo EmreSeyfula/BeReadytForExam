@@ -3,11 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using BeReadyForExam.Data;
 using BeReadyForExam.Models;
 using BeReadyForExam.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace BeReadyForExam.Controllers
 {
-   
-   public class SubjectsController : Controller
+    [Authorize(Roles = "Teacher,Admin")]
+    public class SubjectsController : Controller
     {
         private readonly ISubjectService _service;
 
@@ -28,6 +29,7 @@ namespace BeReadyForExam.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(Subject subject)
         {
             if (!ModelState.IsValid) return View(subject);
@@ -45,6 +47,7 @@ namespace BeReadyForExam.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Subject subject)
         {
             if (!ModelState.IsValid) return View(subject);
@@ -62,6 +65,7 @@ namespace BeReadyForExam.Controllers
         }
 
         [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
             await _service.DeleteAsync(id);

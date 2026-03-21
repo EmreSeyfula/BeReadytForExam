@@ -1,20 +1,22 @@
 ﻿using BeReadyForExam.Models;
 using BeReadyForExam.Services.Implementations;
 using BeReadyForExam.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 namespace BeReadyForExam.Controllers
 {
+    [Authorize(Roles = "Teacher,Admin")]
     public class TopicsController : Controller
     {
        private readonly ITopicService _service;
         private readonly ISubjectService _subjectService;
-        private ISubjectService? subjectService;
+    
 
         public TopicsController(ITopicService service)
         {
                 _service = service;
-            _subjectService = subjectService;
+           
         }
             public async Task<IActionResult> Index()
             {
@@ -26,22 +28,23 @@ namespace BeReadyForExam.Controllers
             {
                 var subjects = await _service.GetAllSubjectsAsync();
                 ViewBag.Subjects = new SelectList(subjects, "Id", "Name");
-                return View();
+                return View(new Topic { IsActive = true });
             }
 
             [HttpPost]
-            public async Task<IActionResult> Create(Topic topic)
-            {
-                if (!ModelState.IsValid)
-                {
-                    var subjects = await _service.GetAllSubjectsAsync();
-                    ViewBag.Subjects = new SelectList(subjects, "Id", "Name");
-                    return View(topic);
-                }
-
-                await _service.CreateAsync(topic);
-                return RedirectToAction(nameof(Index));
-            }
+            [ValidateAntiForgeryToken]
+              public async Task<IActionResult> Create(Topic topic)
+                  {
+                      if (!ModelState.IsValid)
+                      {
+                          var subjects = await _service.GetAllSubjectsAsync();
+                          ViewBag.Subjects = new SelectList(subjects, "Id", "Name", topic.SubjectId);
+                          return View(topic);
+                      }
+              
+                      await _service.CreateAsync(topic);
+                      return RedirectToAction(nameof(Index));
+                  }
 
             public async Task<IActionResult> Edit(int id)
             {
@@ -55,7 +58,8 @@ namespace BeReadyForExam.Controllers
             }
 
             [HttpPost]
-            public async Task<IActionResult> Edit(Topic topic)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Topic topic)
             {
                 if (!ModelState.IsValid)
                 {
@@ -77,7 +81,8 @@ namespace BeReadyForExam.Controllers
             }
 
             [HttpPost, ActionName("Delete")]
-            public async Task<IActionResult> DeleteConfirmed(int id)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
             {
                 await _service.DeleteAsync(id);
                 return RedirectToAction(nameof(Index));
