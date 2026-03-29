@@ -59,7 +59,7 @@ namespace BeReadyForExam.Controllers
 
             if (!model.Options.Any(o => o.IsCorrect))
             {
-                ModelState.AddModelError("", "Select at least one correct answer.");
+                ModelState.AddModelError("", "Избери поне един верен отговор.");
             }
 
             NormalizeOptions(model);
@@ -175,12 +175,12 @@ namespace BeReadyForExam.Controllers
         {
             if (model.Options.Count < 2)
             {
-                ModelState.AddModelError("", "Question must have at least 2 options.");
+                ModelState.AddModelError("", "Въпросът трябва да има поне 2 отговора.");
             }
 
             if (!model.Options.Any(o => o.IsCorrect))
             {
-                ModelState.AddModelError("", "Select at least one correct answer.");
+                ModelState.AddModelError("", "Избери поне един верен отговор.");
             }
         }
         private static void NormalizeOptions(QuestionCreateViewModel model)

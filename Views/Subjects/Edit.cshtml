@@ -1,29 +1,29 @@
 ﻿@model BeReadyForExam.Models.Subject
 
 @{
-    ViewData["Title"] = "Edit Subject";
+    ViewData["Title"] = "Редакция на предмет";
 }
 
-<h2>Edit Subject</h2>
+<h2>Редакция на предмет</h2>
 
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="Id" />
 
     <div class="form-group">
-        <label asp-for="Name"></label>
+        <label asp-for="Name">Име</label>
         <input asp-for="Name" class="form-control" />
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
     <div class="form-group">
-        <label asp-for="Description"></label>
+        <label asp-for="Description">Описание</label>
         <textarea asp-for="Description" class="form-control"></textarea>
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
     <br />
-    <button type="submit" class="btn btn-warning">Save</button>
-    <a asp-action="Index" class="btn btn-secondary">Back</a>
+    <button type="submit" class="btn btn-warning">Запази</button>
+    <a asp-action="Index" class="btn btn-secondary">Назад</a>
 </form>
 
 @section Scripts {

@@ -1,12 +1,11 @@
 ﻿@{
-    ViewData["Title"] = "Home";
+    ViewData["Title"] = "Начало";
 }
 
-<div class="container mt-5">
-    <div class="text-center mb-5">
-        <h1 class="display-5 fw-bold">BeReadyForExam</h1>
-        <p class="lead">Interactive exam and quiz platform</p>
-    </div>
+<div class="text-center">
+    <h1 class="display-4">Добре дошъл</h1>
+    <p>Платформа за подготовка за изпити, тестове и упражнения.</p>
+</div>
 
     @if (User.Identity != null && User.Identity.IsAuthenticated)
     {

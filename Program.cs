@@ -4,6 +4,8 @@ using BeReadyForExam.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using static BeReadyForExam.Services.Implementations.ExamService;
+using Microsoft.AspNetCore.Localization;
+using System.Globalization;
 
 namespace BeReadyForExam
 {
@@ -13,26 +15,44 @@ namespace BeReadyForExam
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+            var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
+                ?? throw new InvalidOperationException("Няма намерен connection string 'DefaultConnection'.");
+
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
+
             builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-            builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = false)
+            builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+                options.SignIn.RequireConfirmedAccount = false)
                 .AddRoles<IdentityRole>()
                 .AddEntityFrameworkStores<ApplicationDbContext>();
+
+            builder.Services.AddLocalization();
+
             builder.Services.AddControllersWithViews();
             builder.Services.AddScoped<ISubjectService, SubjectService>();
             builder.Services.AddScoped<ITopicService, TopicService>();
             builder.Services.AddScoped<IQuestionService, QuestionService>();
-            builder.Services.AddScoped<IExamService, ExamService>();
 
             var app = builder.Build();
 
+            var supportedCultures = new[]
+            {
+                new CultureInfo("bg-BG")
+            };
+
+            var localizationOptions = new RequestLocalizationOptions
+            {
+                DefaultRequestCulture = new RequestCulture("bg-BG"),
+                SupportedCultures = supportedCultures,
+                SupportedUICultures = supportedCultures
+            };
+
+            app.UseRequestLocalization(localizationOptions);
+
             if (app.Environment.IsDevelopment())
             {
-                // Configure the HTTP request pipeline.
                 app.UseMigrationsEndPoint();
             }
             else
@@ -46,20 +66,23 @@ namespace BeReadyForExam
 
             app.UseRouting();
 
-            app.UseAuthorization();
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
                 pattern: "{controller=Home}/{action=Index}/{id?}");
+
             app.MapRazorPages();
+
             using (var scope = app.Services.CreateScope())
             {
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 await db.Database.MigrateAsync();
-
-                await identityseed.SeedAsync(scope.ServiceProvider);
             }
+
+            await identityseed.SeedAsync(app.Services);
+            await BeReadyForExam.Data.identityseed.SeedAsync(app.Services);
 
             app.Run();
         }

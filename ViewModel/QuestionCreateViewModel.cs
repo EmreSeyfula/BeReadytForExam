@@ -7,10 +7,10 @@ namespace BeReadyForExam.ViewModel
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Полето „Текст“ е задължително.")]
         public string Text { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "Please select a test.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Моля, изберете тест.")]
         public int ExamId { get; set; }
 
         public bool IsActive { get; set; } = true;
@@ -23,9 +23,9 @@ namespace BeReadyForExam.ViewModel
     {
         public int Id { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Полето „Текст на отговора“ е задължително.")]
         public string Text { get; set; }
-
+        [Display(Name = "Верен")]
         public bool IsCorrect { get; set; }
     }
 }
