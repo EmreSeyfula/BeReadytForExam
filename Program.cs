@@ -3,7 +3,6 @@ using BeReadyForExam.Data;
 using BeReadyForExam.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using static BeReadyForExam.Services.Implementations.ExamService;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
 
@@ -16,7 +15,7 @@ namespace BeReadyForExam
             var builder = WebApplication.CreateBuilder(args);
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("Няма намерен connection string 'DefaultConnection'.");
+                ?? throw new InvalidOperationException("пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ connection string 'DefaultConnection'.");
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -34,6 +33,7 @@ namespace BeReadyForExam
             builder.Services.AddScoped<ISubjectService, SubjectService>();
             builder.Services.AddScoped<ITopicService, TopicService>();
             builder.Services.AddScoped<IQuestionService, QuestionService>();
+            builder.Services.AddScoped<IExamService, ExamService>();
 
             var app = builder.Build();
 
