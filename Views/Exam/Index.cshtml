@@ -2,8 +2,8 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Exams (Teacher)</h2>
-        <a asp-action="Create" class="btn btn-success">Create Exam</a>
+        <h2 class="mb-0">Тестове (учител)</h2>
+        <a asp-action="Create" class="btn btn-success">Създай тест</a>
     </div>
 
     <div class="card shadow-sm">
@@ -11,57 +11,57 @@
             <table class="table table-hover align-middle">
                 <thead class="table-dark">
                     <tr>
-                        <th>Title</th>
-                        <th>Topic</th>
-                        <th>Active</th>
-                        <th>Configured</th>
-                        <th>Questions in DB</th>
+                        <th>Заглавие</th>
+                        <th>Тема</th>
+                        <th>Активен</th>
+                        <th>Зададени</th>
+                        <th>Въпроси в базата</th>
                         <th style="width:320px;"></th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var e in Model)
                     {
-                        <tr>
-                            <td class="fw-semibold">@e.Title</td>
-                            <td>@e.TopicName</td>
-                            <td>
+                            <tr>
+                                <td class="fw-semibold">@e.Title</td>
+                                <td>@e.TopicName</td>
+                                <td>
                                 @if (e.IsActive)
                                 {
-                                        <span class="badge bg-success">Active</span>
+                                            <span class="badge bg-success">Активен</span>
                                 }
                                 else
                                 {
-                                        <span class="badge bg-secondary">Inactive</span>
+                                            <span class="badge bg-secondary">Неактивен</span>
                                 }
-                            </td>
-                            <td>@e.ConfiguredQuestionsCount</td>
-                            <td>
+                                </td>
+                                <td>@e.ConfiguredQuestionsCount</td>
+                                <td>
                                 @e.ActualQuestionsInBank
                                 @if (e.ActualQuestionsInBank < e.ConfiguredQuestionsCount)
                                 {
-                                        <span class="text-danger small ms-2">(not enough)</span>
+                                            <span class="text-danger small ms-2">(недостатъчни)</span>
                                 }
-                            </td>
-                            <td class="text-end">
-                                <a asp-controller="Question"
-                                   asp-action="Index"
-                                   asp-route-examId="@e.Id"
-                                   class="btn btn-sm btn-outline-primary">
-                                    Manage Questions
-                                </a>
+                                </td>
+                                <td class="text-end">
+                                    <a asp-controller="Question"
+                                       asp-action="Index"
+                                       asp-route-examId="@e.Id"
+                                       class="btn btn-sm btn-outline-primary">
+                                        Управление на въпросите
+                                    </a>
 
-                                <a asp-controller="Question"
-                                   asp-action="Create"
-                                   asp-route-examId="@e.Id"
-                                   class="btn btn-sm btn-outline-success">
-                                    Add Question
-                                </a>
+                                    <a asp-controller="Question"
+                                       asp-action="Create"
+                                       asp-route-examId="@e.Id"
+                                       class="btn btn-sm btn-outline-success">
+                                        Добави въпрос
+                                    </a>
 
-                                <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-sm btn-warning">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@e.Id" class="btn btn-sm btn-danger">Delete</a>
-                            </td>
-                        </tr>
+                                    <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-sm btn-warning">Редактирай</a>
+                                    <a asp-action="Delete" asp-route-id="@e.Id" class="btn btn-sm btn-danger">Изтрий</a>
+                                </td>
+                            </tr>
                     }
                 </tbody>
             </table>

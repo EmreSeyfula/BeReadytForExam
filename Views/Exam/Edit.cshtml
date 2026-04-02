@@ -1,15 +1,16 @@
 ﻿@model BeReadyForExam.Models.Exam
 
-<h2>Edit Exam</h2>
+<h2>Редакция на тест</h2>
 <form asp-action="Edit" method="post">
-<input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="Id" />
+
     <div class="mb-3">
-        <label>Title</label>
+        <label>Заглавие</label>
         <input asp-for="Title" class="form-control" />
     </div>
 
     <div class="mb-3">
-        <label>Topic</label>
+        <label>Тема</label>
         <select asp-for="TopicId"
                 asp-items="ViewBag.Topics"
                 class="form-select">
@@ -17,19 +18,19 @@
     </div>
 
     <div class="mb-3">
-        <label>Questions Count</label>
+        <label>Брой въпроси</label>
         <input asp-for="QuestionsCount" class="form-control" />
     </div>
 
     <div class="form-check">
         <input asp-for="RandomizeQuestions" class="form-check-input" />
-        <label class="form-check-label">Randomize Questions</label>
+        <label class="form-check-label">Разбъркай въпросите</label>
     </div>
 
     <div class="form-check">
         <input asp-for="IsActive" class="form-check-input" />
-        <label class="form-check-label">Is Active</label>
+        <label class="form-check-label">Активен</label>
     </div>
 
-    <button type="submit" class="btn btn-primary mt-3">Save</button>
+    <button type="submit" class="btn btn-primary mt-3">Запази</button>
 </form>

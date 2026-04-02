@@ -1,10 +1,10 @@
 ﻿@model BeReadyForExam.Models.Exam
 
-<h2>Delete Exam</h2>
+<h2>Изтриване на тест</h2>
 
-<h4>Are you sure you want to delete @Model.Title ?</h4>
+<h4>Сигурен ли си, че искаш да изтриеш теста „@Model.Title“?</h4>
 
 <form asp-action="DeleteConfirmed" method="post">
     <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Delete</button>
-    </form>
+    <button type="submit" class="btn btn-danger">Изтрий</button>
+</form>

@@ -2,14 +2,14 @@
 @model QuestionCreateViewModel
 
 @{
-    ViewData["Title"] = "Create Question";
+    ViewData["Title"] = "Създаване на въпрос";
 }
 
 <div asp-validation-summary="All" class="text-danger"></div>
 <div class="container mt-4" style="max-width: 900px;">
     <div class="card shadow-sm">
         <div class="card-header">
-            <h3 class="mb-0">Create Question</h3>
+            <h3 class="mb-0">Създаване на въпрос</h3>
         </div>
         <div class="card-body">
             <div asp-validation-summary="All" class="text-danger mb-3"></div>
@@ -18,30 +18,30 @@
                 @Html.AntiForgeryToken()
 
                 <div class="mb-3">
-                    <label asp-for="Text" class="form-label">Question text</label>
+                    <label asp-for="Text" class="form-label">Текст на въпроса</label>
                     <input asp-for="Text" class="form-control" />
                     <span asp-validation-for="Text" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="ExamId" class="form-label">Test</label>
+                    <label asp-for="ExamId" class="form-label">Тест</label>
                     <select asp-for="ExamId" asp-items="Model.Exams" class="form-select">
-                        <option value="0">-- Select Test --</option>
+                        <option value="0">-- Избери тест --</option>
                     </select>
                     <span asp-validation-for="ExamId" class="text-danger"></span>
                 </div>
 
                 <div class="form-check form-switch mb-4">
                     <input asp-for="IsActive" class="form-check-input" />
-                    <label asp-for="IsActive" class="form-check-label">Active question</label>
+                    <label asp-for="IsActive" class="form-check-label">Активен въпрос</label>
                 </div>
 
                 <hr />
 
                 <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0">Options</h5>
+                    <h5 class="mb-0">Отговори</h5>
                     <button type="button" id="addOption" class="btn btn-outline-secondary btn-sm">
-                        Add option
+                        Добави отговор
                     </button>
                 </div>
 
@@ -55,7 +55,7 @@
                                     <input name="Options[@i].Text"
                                            value="@Model.Options[i].Text"
                                            class="form-control"
-                                           placeholder="Option text" />
+                                           placeholder="Текст на отговора" />
                                 </div>
 
                                 <div class="col-md-2">
@@ -66,12 +66,12 @@
                                                value="true"
                                                class="form-check-input"
                                     @(Model.Options[i].IsCorrect ? "checked" : "") />
-                                        <label class="form-check-label">Correct</label>
+                                        <label class="form-check-label">Верен</label>
                                     </div>
                                 </div>
 
                                 <div class="col-md-2 text-end">
-                                    <button type="button" class="btn btn-outline-danger remove-option">Remove</button>
+                                    <button type="button" class="btn btn-outline-danger remove-option">Премахни</button>
                                 </div>
                             </div>
                     }
@@ -80,8 +80,8 @@
                 <hr />
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">Save Question</button>
-                    <a asp-action="Index" asp-route-examId="@Model.ExamId" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn btn-success">Запази въпроса</button>
+                    <a asp-action="Index" asp-route-examId="@Model.ExamId" class="btn btn-secondary">Назад</a>
                 </div>
             </form>
         </div>
@@ -121,7 +121,7 @@
                         <div class="col-md-8">
                             <input name="Options[${index}].Text"
                                    class="form-control"
-                                   placeholder="Option text" />
+                                   placeholder="Текст на отговора" />
                         </div>
 
                         <div class="col-md-2">
@@ -131,12 +131,12 @@
                                        name="Options[${index}].IsCorrect"
                                        value="true"
                                        class="form-check-input" />
-                                <label class="form-check-label">Correct</label>
+                                <label class="form-check-label">Верен</label>
                             </div>
                         </div>
 
                         <div class="col-md-2 text-end">
-                            <button type="button" class="btn btn-outline-danger remove-option">Remove</button>
+                            <button type="button" class="btn btn-outline-danger remove-option">Премахни</button>
                         </div>
                     </div>
                 `;

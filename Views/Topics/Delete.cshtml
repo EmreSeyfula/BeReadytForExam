@@ -1,10 +1,11 @@
 ﻿@model BeReadyForExam.Models.Topic
 
-<h2>Delete Topic</h2>
+<h2>Изтриване на тема</h2>
 
-<p>Are you sure you want to delete @Model.Name?</p>
+<p>Сигурен ли си, че искаш да изтриеш „@Model.Name“?</p>
 
 <form asp-action="Delete">
     <input type="hidden" asp-for="Id" />
-    <button type="submit">Delete</button>
+    <button type="submit" class="btn btn-danger">Изтрий</button>
+    <a asp-action="Index" class="btn btn-secondary">Отказ</a>
 </form>

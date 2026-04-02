@@ -1,0 +1,32 @@
+﻿@page
+@model ExternalLoginModel
+@{
+    ViewData["Title"] = "Регистрация";
+}
+
+<h1>@ViewData["Title"]</h1>
+<h2 id="external-login-title">Свържете своя акаунт в @Model.ProviderDisplayName.</h2>
+<hr />
+
+<p id="external-login-description" class="text-info">
+    Успешно се удостоверихте чрез <strong>@Model.ProviderDisplayName</strong>.
+    Моля, въведете имейл адрес за този сайт по-долу и натиснете бутона „Регистрация“, за да завършите влизането.
+</p>
+
+<div class="row">
+    <div class="col-md-4">
+        <form asp-page-handler="Confirmation" asp-route-returnUrl="@Model.ReturnUrl" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" role="alert"></div>
+            <div class="form-floating mb-3">
+                <input asp-for="Input.Email" class="form-control" autocomplete="email" placeholder="Моля, въведете своя имейл адрес."/>
+                <label asp-for="Input.Email" class="form-label">Имейл адрес</label>
+                <span asp-validation-for="Input.Email" class="text-danger"></span>
+            </div>
+            <button type="submit" class="w-100 btn btn-lg btn-primary">Регистрация</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

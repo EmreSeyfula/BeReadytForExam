@@ -1,13 +1,13 @@
 ﻿@model BeReadyForExam.Models.Topic
 
 @{
-    ViewData["Title"] = "Edit Topic";
+    ViewData["Title"] = "Редакция на тема";
 }
 
 <div class="container mt-4" style="max-width: 700px;">
     <div class="card shadow-sm">
         <div class="card-header">
-            <h3 class="mb-0">Edit Topic</h3>
+            <h3 class="mb-0">Редакция на тема</h3>
         </div>
         <div class="card-body">
             <div asp-validation-summary="All" class="text-danger mb-3"></div>
@@ -18,27 +18,27 @@
                 <input type="hidden" asp-for="Id" />
 
                 <div class="mb-3">
-                    <label asp-for="Name" class="form-label">Topic name</label>
+                    <label asp-for="Name" class="form-label">Име на темата</label>
                     <input asp-for="Name" class="form-control" />
                     <span asp-validation-for="Name" class="text-danger"></span>
                 </div>
 
                 <div class="mb-3">
-                    <label asp-for="SubjectId" class="form-label">Subject</label>
+                    <label asp-for="SubjectId" class="form-label">Предмет</label>
                     <select asp-for="SubjectId" asp-items="ViewBag.Subjects" class="form-select">
-                        <option value="">-- Select Subject --</option>
+                        <option value="">-- Избери предмет --</option>
                     </select>
                     <span asp-validation-for="SubjectId" class="text-danger"></span>
                 </div>
 
                 <div class="form-check form-switch mb-4">
                     <input asp-for="IsActive" class="form-check-input" />
-                    <label asp-for="IsActive" class="form-check-label">Active topic</label>
+                    <label asp-for="IsActive" class="form-check-label">Активна тема</label>
                 </div>
 
                 <div class="d-flex gap-2">
-                    <button type="submit" class="btn btn-success">Save Changes</button>
-                    <a asp-action="Index" class="btn btn-secondary">Back</a>
+                    <button type="submit" class="btn btn-success">Запази промените</button>
+                    <a asp-action="Index" class="btn btn-secondary">Назад</a>
                 </div>
             </form>
         </div>

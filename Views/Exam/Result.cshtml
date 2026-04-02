@@ -3,17 +3,17 @@
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <div>
-            <h2 class="mb-0">Exam Result</h2>
+            <h2 class="mb-0">Резултат от теста</h2>
             <div class="text-muted">@Model.TopicName</div>
         </div>
-        <a asp-action="MyHistory" class="btn btn-outline-secondary">My History</a>
+        <a asp-action="MyHistory" class="btn btn-outline-secondary">Моята история</a>
     </div>
 
     <div class="row g-3">
         <div class="col-md-3">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <div class="text-muted">Grade</div>
+                    <div class="text-muted">Оценка</div>
                     <div class="display-6 fw-bold">@Model.Grade.ToString("0.00")</div>
                 </div>
             </div>
@@ -21,7 +21,7 @@
         <div class="col-md-3">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <div class="text-muted">Score</div>
+                    <div class="text-muted">Резултат</div>
                     <div class="display-6 fw-bold">@Model.ScorePercent.ToString("0.0")%</div>
                 </div>
             </div>
@@ -29,7 +29,7 @@
         <div class="col-md-3">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <div class="text-muted">Correct</div>
+                    <div class="text-muted">Верни</div>
                     <div class="display-6 fw-bold">@Model.CorrectCount / @Model.TotalQuestions</div>
                 </div>
             </div>
@@ -37,11 +37,11 @@
         <div class="col-md-3">
             <div class="card shadow-sm">
                 <div class="card-body">
-                    <div class="text-muted">Time</div>
+                    <div class="text-muted">Време</div>
                     <div class="fw-semibold">
                         @Model.StartedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")
                         <div class="text-muted small">
-                            @(Model.FinishedAt == null ? "Not finished" : Model.FinishedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
+                            @(Model.FinishedAt == null ? "Незавършен" : Model.FinishedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))
                         </div>
                     </div>
                 </div>
@@ -51,43 +51,43 @@
 
     <div class="card shadow-sm mt-4">
         <div class="card-header bg-dark text-white">
-            Wrong Answers
+            Грешни отговори
         </div>
         <div class="card-body">
             @if (Model.WrongAnswers.Count == 0)
             {
-                    <div class="alert alert-success mb-0">
-                        Perfect! No wrong answers 🎉
-                    </div>
+                <div class="alert alert-success mb-0">
+                    Отлично! Нямаш грешни отговори 🎉
+                </div>
             }
             else
             {
-                    <div class="table-responsive">
-                        <table class="table table-striped align-middle">
-                            <thead>
-                                <tr>
-                                    <th>Question</th>
-                                    <th>Your Answer</th>
-                                    <th>Correct Answer</th>
-                                </tr>
-                            </thead>
-                            <tbody>
+                <div class="table-responsive">
+                    <table class="table table-striped align-middle">
+                        <thead>
+                            <tr>
+                                <th>Въпрос</th>
+                                <th>Твоят отговор</th>
+                                <th>Правилен отговор</th>
+                            </tr>
+                        </thead>
+                        <tbody>
                             @foreach (var w in Model.WrongAnswers)
                             {
-                                    <tr>
-                                        <td>@w.QuestionText</td>
-                                        <td class="text-danger">@w.SelectedOptionText</td>
-                                        <td class="text-success">@w.CorrectOptionText</td>
-                                    </tr>
+                                <tr>
+                                    <td>@w.QuestionText</td>
+                                    <td class="text-danger">@w.SelectedOptionText</td>
+                                    <td class="text-success">@w.CorrectOptionText</td>
+                                </tr>
                             }
-                            </tbody>
-                        </table>
-                    </div>
+                        </tbody>
+                    </table>
+                </div>
             }
         </div>
     </div>
 
     <div class="mt-3">
-        <a asp-controller="Topics" asp-action="Index" class="btn btn-primary">Back to Topics</a>
+        <a asp-controller="Exam" asp-action="Available" class="btn btn-primary">Назад към тестовете</a>
     </div>
 </div>

@@ -5,7 +5,6 @@
 <div class="text-center">
     <h1 class="display-4">Добре дошъл</h1>
     <p>Платформа за подготовка за изпити, тестове и упражнения.</p>
-</div>
 
     @if (User.Identity != null && User.Identity.IsAuthenticated)
     {
@@ -14,44 +13,44 @@
             {
                         <div class="col-md-4">
                             <a asp-controller="Teacher" asp-action="Dashboard" class="btn btn-primary w-100 py-3">
-                                Teacher Dashboard
+                                Учителско табло
                             </a>
                         </div>
 
                         <div class="col-md-4">
                             <a asp-controller="Exam" asp-action="Index" class="btn btn-outline-primary w-100 py-3">
-                                Manage Exams
+                                Управление на тестове
                             </a>
                         </div>
 
                         <div class="col-md-4">
                             <a asp-controller="Question" asp-action="Index" class="btn btn-outline-secondary w-100 py-3">
-                                Manage Questions
+                                Управление на въпроси
                             </a>
                         </div>
 
                         <div class="col-md-4">
                             <a asp-controller="Topics" asp-action="Index" class="btn btn-outline-dark w-100 py-3">
-                                Manage Topics
+                                Управление на теми
                             </a>
                         </div>
 
                         <div class="col-md-4">
                             <a asp-controller="Subjects" asp-action="Index" class="btn btn-outline-dark w-100 py-3">
-                                Manage Subjects
+                                Управление на предмети
                             </a>
                         </div>
             }
 
                 <div class="col-md-4">
                     <a asp-controller="Exam" asp-action="Available" class="btn btn-success w-100 py-3">
-                        Available Exams
+                        Налични тестове
                     </a>
                 </div>
 
                 <div class="col-md-4">
                     <a asp-controller="Exam" asp-action="MyHistory" class="btn btn-outline-success w-100 py-3">
-                        My History
+                        Моята история
                     </a>
                 </div>
             </div>
@@ -59,9 +58,9 @@
     else
     {
             <div class="text-center">
-                <p class="mb-3">Please log in to start using the platform.</p>
-                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary me-2">Login</a>
-                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-primary">Register</a>
+                <p class="mb-3">Моля, влез в профила си, за да използваш платформата.</p>
+                <a asp-area="Identity" asp-page="/Account/Login" class="btn btn-primary me-2">Вход</a>
+                <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-outline-primary">Регистрация</a>
             </div>
     }
 </div>

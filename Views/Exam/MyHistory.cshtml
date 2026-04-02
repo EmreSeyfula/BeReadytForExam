@@ -2,8 +2,8 @@
 
 <div class="container mt-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">My Exam History</h2>
-        <a asp-controller="Topics" asp-action="Index" class="btn btn-outline-primary">Take New Exam</a>
+        <h2 class="mb-0">Моята история с тестове</h2>
+        <a asp-controller="Exam" asp-action="Available" class="btn btn-outline-primary">Нов тест</a>
     </div>
 
     <div class="card shadow-sm">
@@ -11,7 +11,7 @@
             @if (Model.Attempts.Count == 0)
             {
                     <div class="alert alert-info mb-0">
-                        You don't have any exam attempts yet.
+                        Все още нямаш направени опити.
                     </div>
             }
             else
@@ -20,31 +20,31 @@
                         <table class="table table-hover align-middle">
                             <thead class="table-dark">
                                 <tr>
-                                    <th>Topic</th>
-                                    <th>Started</th>
-                                    <th>Finished</th>
-                                    <th>Correct</th>
-                                    <th>Score</th>
-                                    <th>Grade</th>
+                                    <th>Тема</th>
+                                    <th>Започнат</th>
+                                    <th>Завършен</th>
+                                    <th>Верни</th>
+                                    <th>Резултат</th>
+                                    <th>Оценка</th>
                                     <th style="width:140px;"></th>
                                 </tr>
                             </thead>
                             <tbody>
                             @foreach (var a in Model.Attempts)
                             {
-                                    <tr>
-                                        <td class="fw-semibold">@a.TopicName</td>
-                                        <td>@a.StartedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
-                                        <td>@(a.FinishedAt == null ? "-" : a.FinishedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))</td>
-                                        <td>@a.CorrectCount / @a.TotalQuestions</td>
-                                        <td>@a.ScorePercent.ToString("0.0")%</td>
-                                        <td class="fw-bold">@a.Grade.ToString("0.00")</td>
-                                        <td>
-                                            <a asp-action="Result" asp-route-attemptId="@a.AttemptId" class="btn btn-sm btn-outline-secondary">
-                                                View
-                                            </a>
-                                        </td>
-                                    </tr>
+                                        <tr>
+                                            <td class="fw-semibold">@a.TopicName</td>
+                                            <td>@a.StartedAt.ToLocalTime().ToString("dd.MM.yyyy HH:mm")</td>
+                                            <td>@(a.FinishedAt == null ? "-" : a.FinishedAt.Value.ToLocalTime().ToString("dd.MM.yyyy HH:mm"))</td>
+                                            <td>@a.CorrectCount / @a.TotalQuestions</td>
+                                            <td>@a.ScorePercent.ToString("0.0")%</td>
+                                            <td class="fw-bold">@a.Grade.ToString("0.00")</td>
+                                            <td>
+                                                <a asp-action="Result" asp-route-attemptId="@a.AttemptId" class="btn btn-sm btn-outline-secondary">
+                                                    Виж
+                                                </a>
+                                            </td>
+                                        </tr>
                             }
                             </tbody>
                         </table>

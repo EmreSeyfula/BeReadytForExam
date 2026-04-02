@@ -38,14 +38,14 @@
                             if (User.IsInRole("Admin"))
                             {
                                         <li class="nav-item">
-                                            <a class="nav-link text-dark" asp-controller="Admin" asp-action="Index">Администратор</a>
+                                            <a class="nav-link text-dark" asp-controller="Teacher" asp-action="dashboard">Администратор</a>
                                         </li>
                             }
 
                             if (User.IsInRole("Teacher") || User.IsInRole("Admin"))
                             {
                                         <li class="nav-item">
-                                            <a class="nav-link text-dark" asp-controller="Teacher" asp-action="Index">Учител</a>
+                                            <a class="nav-link text-dark" asp-controller="Teacher" asp-action="dashboard">Учител</a>
                                         </li>
                             }
 

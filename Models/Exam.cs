@@ -6,11 +6,11 @@ namespace BeReadyForExam.Models
     {
         public int Id { get; set; }
 
-        [Range(1, int.MaxValue, ErrorMessage = "Please select a topic.")]
+        [Range(1, int.MaxValue, ErrorMessage = "Моля, изберете тема.")]
         public int TopicId { get; set; }
         public Topic? Topic { get; set; }
 
-        [Required]
+        [Required(ErrorMessage = "Полето „Заглавие“ е задължително.")]
         [MaxLength(200)]
         public string Title { get; set; }
 
@@ -19,8 +19,8 @@ namespace BeReadyForExam.Models
 
         public bool IsActive { get; set; } = true;
 
-        public int? TimeLimitMinutes { get; set; } 
-        public int QuestionsCount { get; set; } = 10; 
+        public int? TimeLimitMinutes { get; set; }
+        public int QuestionsCount { get; set; } = 10;
         public bool RandomizeQuestions { get; set; } = true;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

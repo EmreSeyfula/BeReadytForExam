@@ -1,18 +1,17 @@
 ﻿@model BeReadyForExam.Models.Question
 
 @{
-    ViewData["Title"] = "Delete Question";
+    ViewData["Title"] = "Изтриване на въпрос";
 }
 
 <div class="container mt-4">
     <div class="card shadow-lg rounded-4 border-danger">
         <div class="card-header bg-danger text-white">
-            <h3>🗑 Delete Question</h3>
+            <h3>🗑 Изтриване на въпрос</h3>
         </div>
 
         <div class="card-body">
-
-            <h5>Are you sure you want to delete this question?</h5>
+            <h5>Сигурен ли си, че искаш да изтриеш този въпрос?</h5>
 
             <div class="alert alert-warning mt-3">
                 <strong>@Model.Text</strong>
@@ -22,14 +21,13 @@
                 <input type="hidden" asp-for="Id" />
 
                 <button type="submit" class="btn btn-danger">
-                    Yes, Delete
+                    Да, изтрий
                 </button>
 
                 <a asp-action="Index" class="btn btn-secondary">
-                    Cancel
+                    Отказ
                 </a>
             </form>
-
         </div>
     </div>
 </div>
