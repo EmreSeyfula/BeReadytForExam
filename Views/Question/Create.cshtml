@@ -5,7 +5,7 @@
     ViewData["Title"] = "Създаване на въпрос";
 }
 
-<div asp-validation-summary="All" class="text-danger"></div>
+
 <div class="container mt-4" style="max-width: 900px;">
     <div class="card shadow-sm">
         <div class="card-header">
@@ -18,7 +18,7 @@
                 @Html.AntiForgeryToken()
 
                 <div class="mb-3">
-                    <label asp-for="Text" class="form-label">Текст на въпроса</label>
+                    <label asp-for="Text" class="form-label">Съдържание на въпроса</label>
                     <input asp-for="Text" class="form-control" />
                     <span asp-validation-for="Text" class="text-danger"></span>
                 </div>
@@ -60,12 +60,13 @@
 
                                 <div class="col-md-2">
                                     <div class="form-check mt-2">
-                                        <input type="hidden" name="Options[@i].IsCorrect" value="false" />
+                                        
                                         <input type="checkbox"
                                                name="Options[@i].IsCorrect"
                                                value="true"
                                                class="form-check-input"
                                     @(Model.Options[i].IsCorrect ? "checked" : "") />
+                                        <input type="hidden" name="Options[@i].IsCorrect" value="false" />
                                         <label class="form-check-label">Верен</label>
                                     </div>
                                 </div>

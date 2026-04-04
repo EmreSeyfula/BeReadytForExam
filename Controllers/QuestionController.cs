@@ -57,10 +57,7 @@ namespace BeReadyForExam.Controllers
         {
             
 
-            if (!model.Options.Any(o => o.IsCorrect))
-            {
-                ModelState.AddModelError("", "Избери поне един верен отговор.");
-            }
+            
 
             NormalizeOptions(model);
             ValidateQuestionModel(model);
