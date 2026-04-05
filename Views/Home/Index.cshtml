@@ -27,9 +27,11 @@
                 }
                 else
                 {
-                        <a asp-controller="Subjects" asp-action="Index" class="btn btn-primary btn-lg">
-                            <i class="fas fa-play me-2"></i>Започнете сега
-                        </a>
+                  <a class="btn btn-primary btn-lg rounded-pill px-4"
+                     asp-controller="Exam"
+                     asp-action="Available">
+                      <i class="fas fa-play me-2"></i>Започнете сега
+                  </a>
                 }
             </div>
             <div class="col-lg-5 d-none d-lg-block">

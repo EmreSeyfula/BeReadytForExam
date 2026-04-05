@@ -90,7 +90,7 @@ namespace BeReadyForExam
             app.Run();
 
 
-            //Добави това към CSS (ако още го няма):.questions - table tbody tr { cursor: pointer; }  И можеш да направиш:👉 click върху реда → отиваш в Edit и това го искам да!
+       
        }
     }
 }
