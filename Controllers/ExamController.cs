@@ -92,11 +92,12 @@ namespace BeReadyForExam.Controllers
         }
         [Authorize(Roles = "Teacher,Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Exam exam)
         {
             if (!ModelState.IsValid)
             {
-                await LoadTopicsAsync(exam.TopicId);   
+                await LoadTopicsAsync(exam.TopicId);
                 return View(exam);
             }
 
@@ -150,7 +151,6 @@ namespace BeReadyForExam.Controllers
             return RedirectToAction("Result", new { attemptId = model.AttemptId });
         }
 
-        [Authorize]
         [Authorize]
         public async Task<IActionResult> Result(int attemptId)
         {

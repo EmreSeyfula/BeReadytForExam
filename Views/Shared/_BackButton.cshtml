@@ -1,0 +1,22 @@
+﻿@{
+    var text = ViewData["BackText"] as string ?? "Назад";
+    var controller = ViewData["BackController"] as string;
+    var action = ViewData["BackAction"] as string;
+    var routeExamId = ViewData["BackExamId"];
+}
+
+@if (!string.IsNullOrWhiteSpace(controller) && !string.IsNullOrWhiteSpace(action))
+{
+        <a asp-controller="@controller"
+           asp-action="@action"
+           asp-route-examId="@routeExamId"
+           class="btn btn-outline-secondary back-btn">
+            <i class="fas fa-arrow-left me-1"></i>@text
+        </a>
+}
+else
+{
+        <button type="button" class="btn btn-outline-secondary back-btn" onclick="history.back()">
+            <i class="fas fa-arrow-left me-1"></i>@text
+        </button>
+}

@@ -67,7 +67,18 @@ namespace BeReadyForExam.Services.Implementations
 
         public async Task UpdateAsync(Exam exam)
         {
-            _context.Exams.Update(exam);
+            var dbExam = await _context.Exams.FirstOrDefaultAsync(e => e.Id == exam.Id);
+            if (dbExam == null)
+                throw new InvalidOperationException("Exam not found.");
+
+            dbExam.Title = exam.Title;
+            dbExam.TopicId = exam.TopicId;
+            dbExam.QuestionsCount = exam.QuestionsCount;
+            dbExam.RandomizeQuestions = exam.RandomizeQuestions;
+            dbExam.IsActive = exam.IsActive;
+            dbExam.Description = exam.Description;
+            dbExam.TimeLimitMinutes = exam.TimeLimitMinutes;
+
             await _context.SaveChangesAsync();
         }
 
@@ -252,7 +263,7 @@ namespace BeReadyForExam.Services.Implementations
         public async Task<ExamResultViewModel> GetResultAsync(int attemptId, string userId, bool canAccessAllAttempts = false)
         {
 
-            var attempt = await GetAccessibleAttemptAsync(attemptId, userId, canAccessAllAttempts = false);
+            var attempt = await GetAccessibleAttemptAsync(attemptId, userId, canAccessAllAttempts);
             return new ExamResultViewModel
             {
                 AttemptId = attempt.Id,

@@ -18,7 +18,8 @@
     </dl>
 </div>
 
-<form asp-action="Delete">
+<form asp-action="Delete" method="post">
+    @Html.AntiForgeryToken()
     <input type="hidden" asp-for="Id" />
     <button type="submit" class="btn btn-danger">Изтрий</button>
     <a asp-action="Index" class="btn btn-secondary">Отказ</a>

@@ -1,7 +1,14 @@
 ﻿@model BeReadyForExam.ViewModel.Question.BulkCreateQuestionsViewModel
 
-<h2>Добавяне на въпроси</h2>
-
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2 class="mb-0">Добавяне на въпроси</h2>
+    @{
+        ViewData["BackController"] = "Exam";
+        ViewData["BackAction"] = "Index";
+        ViewData["BackText"] = "Назад към тестовете";
+    }
+    <partial name="_BackButton" />
+</div>
 <form method="post">
     <input type="hidden" asp-for="ExamId" />
 

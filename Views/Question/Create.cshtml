@@ -6,7 +6,6 @@
 }
 
 
-<div class="container mt-4" style="max-width: 900px;">
     <div class="card shadow-sm">
         <div class="card-header">
             <h3 class="mb-0">Създаване на въпрос</h3>
@@ -66,8 +65,9 @@
                                                value="true"
                                                class="form-check-input"
                                     @(Model.Options[i].IsCorrect ? "checked" : "") />
-                                        <input type="hidden" name="Options[@i].IsCorrect" value="false" />
+                                        
                                         <label class="form-check-label">Верен</label>
+                                            <input type="hidden" name="Options[@i].IsCorrect" value="false" />
                                     </div>
                                 </div>
 

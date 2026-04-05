@@ -1,8 +1,11 @@
 ﻿@model BeReadyForExam.ViewModel.Question.QuestionIndexViewModel
 
 @{
-    ViewData["Title"] = "Въпроси";
+    ViewData["BackController"] = "Teacher";
+    ViewData["BackAction"] = "Dashboard";
+    ViewData["BackText"] = "Назад към таблото";
 }
+<partial name="_BackButton" />
 
 <div class="container mt-4 questions-page fade-in-up">
     <div class="questions-hero mb-4">

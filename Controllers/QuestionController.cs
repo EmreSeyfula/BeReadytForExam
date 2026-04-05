@@ -124,13 +124,12 @@ namespace BeReadyForExam.Controllers
                 Id = question.Id,
                 Text = question.Text,
                 ExamId = question.ExamId,
-
+                IsActive = question.IsActive,
                 Exams = exams.Select(e => new SelectListItem
                 {
                     Value = e.Id.ToString(),
                     Text = e.Title
                 }).ToList(),
-
                 Options = question.Options.Select(o => new OptionInputModel
                 {
                     Id = o.Id,

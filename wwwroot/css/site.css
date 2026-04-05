@@ -884,3 +884,15 @@ body {
         cursor: pointer;
     }
 }
+.back-btn {
+    border-radius: 50px;
+    font-weight: 600;
+    padding: 0.65rem 1.25rem;
+}
+.form-floating > .form-control {
+    border-radius: 14px;
+}
+
+.card.rounded-4 {
+    border-radius: 1.25rem !important;
+}

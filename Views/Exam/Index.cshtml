@@ -1,8 +1,16 @@
 ﻿@model IEnumerable<BeReadyForExam.ViewModel.Exam.TeacherExamRowViewModel>
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex gap-2 align-items-center">
+        @{
+            ViewData["BackController"] = "Teacher";
+            ViewData["BackAction"] = "Dashboard";
+            ViewData["BackText"] = "Назад към таблото";
+        }
+        <partial name="_BackButton" />
         <h2 class="mb-0">Тестове (учител)</h2>
+    </div>
+
         <a asp-action="Create" class="btn btn-success">Създай тест</a>
     </div>
 
