@@ -1,63 +1,145 @@
-﻿@model IEnumerable<BeReadyForExam.Models.Question>
+﻿@model BeReadyForExam.ViewModel.Question.QuestionIndexViewModel
 
 @{
     ViewData["Title"] = "Въпроси";
-    var examId = ViewBag.ExamId as int?;
 }
 
-<div class="container mt-4">
-    <div class="d-flex justify-content-between align-items-center mb-3">
-        <div>
-            <h2 class="mb-0">📚 Въпроси</h2>
+<div class="container mt-4 questions-page fade-in-up">
+    <div class="questions-hero mb-4">
+        <div class="questions-hero-content">
+            <div>
+                <span class="questions-tag">Управление</span>
+                <h1 class="questions-title">Въпроси</h1>
+                <p class="questions-subtitle">
+                    Преглеждай, търси и филтрирай въпросите по тема, тест и активност.
+                </p>
+            </div>
 
-            @if (examId != null)
-            {
-                    <div class="text-muted small">
-                        Филтрирани по TestId: <strong>@examId</strong>
-                    </div>
-            }
-        </div>
-
-        <div class="d-flex gap-2">
-            @if (examId != null)
-            {
-                    <a asp-action="Create" asp-route-examId="@examId" class="btn btn-success">
-                        ➕ Създай въпрос
-                    </a>
-
-                    <a asp-action="Index" class="btn btn-outline-secondary">
-                        Покажи всички
-                    </a>
-            }
-            else
-            {
-                    <a asp-action="Create" class="btn btn-success">➕ Създай въпрос</a>
-            }
+            <div>
+                <a asp-action="Create" class="btn btn-primary">
+                    ➕ Създай въпрос
+                </a>
+            </div>
         </div>
     </div>
 
-    <table class="table table-striped table-hover shadow-sm">
-        <thead class="table-dark">
-            <tr>
-                <th>Текст</th>
-                <th>Тест</th>
-                <th>Тема</th>
-                <th width="220">Действия</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var q in Model)
-            {
-                    <tr>
-                        <td>@q.Text</td>
-                        <td>@q.Exam?.Title</td>
-                        <td>@q.Exam?.Topic?.Name</td>
-                        <td>
-                            <a asp-action="Edit" asp-route-id="@q.Id" class="btn btn-warning btn-sm">✏️ Редактирай</a>
-                            <a asp-action="Delete" asp-route-id="@q.Id" class="btn btn-danger btn-sm">🗑 Изтрий</a>
-                        </td>
-                    </tr>
-            }
-        </tbody>
-    </table>
+    <div class="card shadow-sm questions-filter-card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Филтри</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Index" method="get" class="row g-3 align-items-end">
+                <div class="col-md-6 col-lg-3">
+                    <label class="form-label">Търси по текст</label>
+                    <input asp-for="Search" class="form-control" placeholder="Напиши част от въпроса..." />
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <label class="form-label">Тема</label>
+                    <select asp-for="TopicId" asp-items="Model.Topics" class="form-select">
+                        <option value="">Всички теми</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <label class="form-label">Тест</label>
+                    <select asp-for="ExamId" asp-items="Model.Exams" class="form-select">
+                        <option value="">Всички тестове</option>
+                    </select>
+                </div>
+
+                <div class="col-md-6 col-lg-3">
+                    <label class="form-label">Статус</label>
+                    <select asp-for="IsActive" class="form-select">
+                        <option value="">Всички</option>
+                        <option value="true">Активни</option>
+                        <option value="false">Неактивни</option>
+                    </select>
+                </div>
+
+                <div class="col-12 d-flex gap-2 flex-wrap">
+                    <button type="submit" class="btn btn-primary">
+                        Филтрирай
+                    </button>
+
+                    <a asp-action="Index" class="btn btn-outline-primary">
+                        Изчисти
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="questions-summary mb-3">
+        <div class="questions-summary-item">
+            Намерени въпроси: <strong>@Model.Questions.Count</strong>
+        </div>
+    </div>
+
+    <div class="card shadow-sm questions-table-card">
+        <div class="card-header">
+            <h5 class="mb-0">Списък с въпроси</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table questions-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Текст</th>
+                            <th>Тест</th>
+                            <th>Тема</th>
+                            <th>Статус</th>
+                            <th width="220">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.Questions.Any())
+                        {
+                            @foreach (var q in Model.Questions)
+                            {
+                                        <tr>
+                                            <td>
+                                                <div class="question-text-cell">@q.Text</div>
+                                            </td>
+                                            <td>@q.Exam?.Title</td>
+                                            <td>@q.Exam?.Topic?.Name</td>
+                                            <td>
+                                        @if (q.IsActive)
+                                        {
+                                                        <span class="status-pill status-active">Активен</span>
+                                        }
+                                        else
+                                        {
+                                                        <span class="status-pill status-inactive">Неактивен</span>
+                                        }
+                                            </td>
+                                            <td>
+                                                <div class="d-flex gap-2 flex-wrap">
+                                                    <a asp-action="Edit" asp-route-id="@q.Id" class="btn btn-warning btn-sm">
+                                                        ✏️ Редактирай
+                                                    </a>
+                                                    <a asp-action="Delete" asp-route-id="@q.Id" class="btn btn-danger btn-sm">
+                                                        🗑 Изтрий
+                                                    </a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                            }
+                        }
+                        else
+                        {
+                                <tr>
+                                    <td colspan="5" class="text-center py-5">
+                                        <div class="questions-empty-state">
+                                            <div class="mb-2" style="font-size: 2rem;">📭</div>
+                                            <div>Няма въпроси по избраните филтри.</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>

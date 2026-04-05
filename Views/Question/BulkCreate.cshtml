@@ -1,0 +1,42 @@
+﻿@model BeReadyForExam.ViewModel.Question.BulkCreateQuestionsViewModel
+
+<h2>Добавяне на въпроси</h2>
+
+<form method="post">
+    <input type="hidden" asp-for="ExamId" />
+
+    <div id="questions-container">
+        @for (int i = 0; i < Model.Questions.Count; i++)
+        {
+                <div class="card mb-3 question-block">
+                    <div class="card-body">
+                        <label>Въпрос</label>
+                        <input asp-for="Questions[i].Text" class="form-control mb-2" />
+
+                        <div>
+                            <label>Отговори:</label>
+
+                        @for (int j = 0; j < Model.Questions[i].Options.Count; j++)
+                        {
+                                    <div class="d-flex gap-2 mb-2">
+                                        <input asp-for="Questions[i].Options[j].Text" class="form-control" />
+
+                                        <input type="checkbox"
+                                               asp-for="Questions[i].Options[j].IsCorrect" />
+                                        <span>✔</span>
+                                    </div>
+                        }
+                        </div>
+                    </div>
+                </div>
+        }
+    </div>
+
+    <button type="button" class="btn btn-outline-primary" onclick="addQuestion()">
+        ➕ Добави въпрос
+    </button>
+
+    <button type="submit" class="btn btn-primary">
+        💾 Запази всички
+    </button>
+</form>

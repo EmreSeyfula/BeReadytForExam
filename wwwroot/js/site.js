@@ -65,3 +65,33 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 2000);
     }
 });
+
+function addQuestion() {
+    const container = document.getElementById('questions-container');
+    const index = container.children.length;
+
+    const html = `
+        <div class="card mb-3 question-block">
+            <div class="card-body">
+                <label>Въпрос</label>
+                <input name="Questions[${index}].Text" class="form-control mb-2" />
+
+                <div>
+                    <label>Отговори:</label>
+
+                    <div class="d-flex gap-2 mb-2">
+                        <input name="Questions[${index}].Options[0].Text" class="form-control" />
+                        <input type="checkbox" name="Questions[${index}].Options[0].IsCorrect" />
+                    </div>
+
+                    <div class="d-flex gap-2 mb-2">
+                        <input name="Questions[${index}].Options[1].Text" class="form-control" />
+                        <input type="checkbox" name="Questions[${index}].Options[1].IsCorrect" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    `;
+
+    container.insertAdjacentHTML('beforeend', html);
+}

@@ -7,7 +7,7 @@ namespace BeReadyForExam.Models
         public class Question
         {
             public int Id { get; set; }
-        [Display(Name = "Тема")]
+        [Display(Name = "Тест")]
         public int ExamId { get; set; }
 
         public Exam Exam { get; set; }

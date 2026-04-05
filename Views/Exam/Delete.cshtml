@@ -1,10 +1,29 @@
 ﻿@model BeReadyForExam.Models.Exam
 
-<h2>Изтриване на тест</h2>
+@{
+    ViewData["Title"] = "Изтриване на тест";
+}
 
-<h4>Сигурен ли си, че искаш да изтриеш теста „@Model.Title“?</h4>
+<div class="container mt-4">
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h4 class="mb-0">Изтриване на тест</h4>
+        </div>
+        <div class="card-body">
+            <p>Сигурен ли си, че искаш да изтриеш този тест?</p>
 
-<form asp-action="DeleteConfirmed" method="post">
-    <input type="hidden" asp-for="Id" />
-    <button type="submit" class="btn btn-danger">Изтрий</button>
-</form>
+            <dl class="row">
+                <dt class="col-sm-3">Заглавие</dt>
+                <dd class="col-sm-9">@Model.Title</dd>
+            </dl>
+
+            <form asp-action="Delete" method="post">
+                <input type="hidden" asp-for="Id" />
+                @Html.AntiForgeryToken()
+
+                <button type="submit" class="btn btn-danger">Изтрий</button>
+                <a asp-action="Index" class="btn btn-secondary">Отказ</a>
+            </form>
+        </div>
+    </div>
+</div>

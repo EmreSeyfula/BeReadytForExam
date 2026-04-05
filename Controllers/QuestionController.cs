@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using BeReadyForExam.ViewModel.Question;
 using BeReadyForExam.Services.Interfaces;
 using BeReadyForExam.Models;
 using BeReadyForExam.ViewModel;
@@ -23,13 +24,37 @@ namespace BeReadyForExam.Controllers
 
 
         [Authorize(Roles = "Teacher,Admin")]
-        public async Task<IActionResult> Index( int? examId)
+        public async Task<IActionResult> Index(string? search, int? topicId, int? examId, bool? isActive)
         {
-            var questions = await _questionService.GetAllAsync(examId);
-            ViewBag.ExamId = examId;
-            return View(questions);
-        }
+            var questions = await _questionService.GetFilteredAsync(search, topicId, examId, isActive);
+            var topics = await _questionService.GetAllTopicsAsync();
+            var exams = await _examService.GetAllActiveExamsAsync();
 
+            var vm = new QuestionIndexViewModel
+            {
+                Questions = questions,
+                Search = search,
+                TopicId = topicId,
+                ExamId = examId,
+                IsActive = isActive,
+
+                Topics = topics.Select(t => new SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = t.Name,
+                    Selected = topicId.HasValue && t.Id == topicId.Value
+                }).ToList(),
+
+                Exams = exams.Select(e => new SelectListItem
+                {
+                    Value = e.Id.ToString(),
+                    Text = e.Title,
+                    Selected = examId.HasValue && e.Id == examId.Value
+                }).ToList()
+            };
+
+            return View(vm);
+        }
 
         [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Create(int? examId)
@@ -202,6 +227,47 @@ namespace BeReadyForExam.Controllers
                 Text = e.Title,
                 Selected = e.Id == model.ExamId
             }).ToList();
+        }
+
+        public IActionResult BulkCreate(int examId)
+        {
+            var vm = new BulkCreateQuestionsViewModel
+            {
+                ExamId = examId,
+                Questions = new List<QuestionInputModel>
+        {
+            new QuestionInputModel()
+        }
+            };
+
+            return View(vm);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> BulkCreate(BulkCreateQuestionsViewModel model)
+        {
+            foreach (var q in model.Questions)
+            {
+                if (string.IsNullOrWhiteSpace(q.Text)) continue;
+
+                var question = new Question
+                {
+                    Text = q.Text,
+                    ExamId = model.ExamId,
+                    IsActive = q.IsActive,
+                    Options = q.Options
+                        .Where(o => !string.IsNullOrWhiteSpace(o.Text))
+                        .Select(o => new Option
+                        {
+                            Text = o.Text,
+                            IsCorrect = o.IsCorrect
+                        }).ToList()
+                };
+
+                await _questionService.CreateAsync(question);
+            }
+
+            return RedirectToAction("Index", new { examId = model.ExamId });
         }
     }
 }

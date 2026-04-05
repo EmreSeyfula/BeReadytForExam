@@ -5,6 +5,9 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
+using BeReadyForExam.Models;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.Reflection;
 
 namespace BeReadyForExam
 {
@@ -85,6 +88,9 @@ namespace BeReadyForExam
             await BeReadyForExam.Data.identityseed.SeedAsync(app.Services);
 
             app.Run();
-        }
+
+
+            //Добави това към CSS (ако още го няма):.questions - table tbody tr { cursor: pointer; }  И можеш да направиш:👉 click върху реда → отиваш в Edit и това го искам да!
+       }
     }
 }

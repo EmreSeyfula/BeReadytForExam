@@ -62,8 +62,8 @@ namespace BeReadyForExam.Controllers
             exam.CreatedAt = DateTime.UtcNow;
 
             var examId = await _examService.CreateAsync(exam);
-            
-            return RedirectToAction("Index", "Question", new { examId });
+
+            return RedirectToAction("BulkCreate", "Question", new { examId });
         }
 
         private async Task LoadTopicsAsync(int? selectedTopicId = null)

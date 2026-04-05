@@ -11,7 +11,9 @@ namespace BeReadyForExam.Services.Interfaces
         Task DeleteAsync(int id);
 
         Task<List<Topic>> GetAllTopicsAsync();
-
+        Task<List<Question>> GetFilteredAsync(string? search, int? topicId, int? examId, bool? isActive);
        
+
+
     }
 }

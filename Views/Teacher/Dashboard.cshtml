@@ -4,113 +4,201 @@
     ViewData["Title"] = "Учителско табло";
 }
 
-<div class="container mt-4">
-    <h2 class="mb-4">Учителско табло</h2>
-
-    <div class="d-flex gap-2 mb-4">
-        <a asp-controller="Exam" asp-action="Index" class="btn btn-primary">Управление на тестове</a>
-        <a asp-controller="Question" asp-action="Index" class="btn btn-outline-primary">Въпроси</a>
-        <a asp-controller="Topics" asp-action="Index" class="btn btn-outline-secondary">Теми</a>
-        <a asp-controller="Subjects" asp-action="Index" class="btn btn-outline-dark">Предмети</a>
-    </div>
-
-    <div class="row g-3 mb-4">
-        <div class="col-md-4 col-lg-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <div class="text-muted">Общо тестове</div>
-                    <div class="fs-3 fw-bold">@Model.TotalExams</div>
-                </div>
+<div class="container mt-4 teacher-dashboard fade-in-up">
+    <div class="dashboard-hero mb-4">
+        <div class="dashboard-hero-content">
+            <div>
+                <span class="dashboard-tag">Администрация</span>
+                <h1 class="dashboard-title">Учителско табло</h1>
+                <p class="dashboard-subtitle">
+                    Управлявай тестове, въпроси, теми и следи последните ученически опити от едно място.
+                </p>
             </div>
-        </div>
 
-        <div class="col-md-4 col-lg-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <div class="text-muted">Активни тестове</div>
-                    <div class="fs-3 fw-bold">@Model.ActiveExams</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 col-lg-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <div class="text-muted">Въпроси</div>
-                    <div class="fs-3 fw-bold">@Model.TotalQuestions</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 col-lg-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <div class="text-muted">Опити</div>
-                    <div class="fs-3 fw-bold">@Model.TotalAttempts</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 col-lg-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <div class="text-muted">Завършени</div>
-                    <div class="fs-3 fw-bold">@Model.CompletedAttempts</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-md-4 col-lg-2">
-            <div class="card shadow-sm text-center">
-                <div class="card-body">
-                    <div class="text-muted">Среден резултат</div>
-                    <div class="fs-3 fw-bold">@Model.AverageScorePercent.ToString("F1")%</div>
-                </div>
+            <div class="dashboard-hero-actions">
+                <a asp-controller="Exam" asp-action="Index" class="btn btn-primary">
+                    Управление на тестове
+                </a>
+                <a asp-controller="Question" asp-action="Index" class="btn btn-dashboard-soft">
+                    Въпроси
+                </a>
             </div>
         </div>
     </div>
 
-    <div class="card shadow-sm">
-        <div class="card-header">
-            <h5 class="mb-0">Последни опити</h5>
+    <div class="dashboard-quick-links mb-4">
+        <a asp-controller="Exam" asp-action="Index" class="dashboard-link-card">
+            <div class="dashboard-link-icon">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div>
+                <div class="dashboard-link-title">Тестове</div>
+                <div class="dashboard-link-text">Преглед и управление</div>
+            </div>
+        </a>
+
+        <a asp-controller="Question" asp-action="Index" class="dashboard-link-card">
+            <div class="dashboard-link-icon">
+                <i class="fas fa-question-circle"></i>
+            </div>
+            <div>
+                <div class="dashboard-link-title">Въпроси</div>
+                <div class="dashboard-link-text">Редакция и създаване</div>
+            </div>
+        </a>
+
+        <a asp-controller="Topics" asp-action="Index" class="dashboard-link-card">
+            <div class="dashboard-link-icon">
+                <i class="fas fa-layer-group"></i>
+            </div>
+            <div>
+                <div class="dashboard-link-title">Теми</div>
+                <div class="dashboard-link-text">Организация по теми</div>
+            </div>
+        </a>
+
+        <a asp-controller="Subjects" asp-action="Index" class="dashboard-link-card">
+            <div class="dashboard-link-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <div>
+                <div class="dashboard-link-title">Предмети</div>
+                <div class="dashboard-link-text">Управление на предмети</div>
+            </div>
+        </a>
+    </div>
+
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-4 col-xl-2">
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-top">
+                    <span class="dashboard-stat-icon"><i class="fas fa-file-signature"></i></span>
+                    <span class="dashboard-stat-label">Общо тестове</span>
+                </div>
+                <div class="dashboard-stat-number">@Model.TotalExams</div>
+            </div>
         </div>
+
+        <div class="col-md-6 col-lg-4 col-xl-2">
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-top">
+                    <span class="dashboard-stat-icon"><i class="fas fa-check-circle"></i></span>
+                    <span class="dashboard-stat-label">Активни тестове</span>
+                </div>
+                <div class="dashboard-stat-number">@Model.ActiveExams</div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 col-xl-2">
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-top">
+                    <span class="dashboard-stat-icon"><i class="fas fa-question"></i></span>
+                    <span class="dashboard-stat-label">Въпроси</span>
+                </div>
+                <div class="dashboard-stat-number">@Model.TotalQuestions</div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 col-xl-2">
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-top">
+                    <span class="dashboard-stat-icon"><i class="fas fa-chart-line"></i></span>
+                    <span class="dashboard-stat-label">Опити</span>
+                </div>
+                <div class="dashboard-stat-number">@Model.TotalAttempts</div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 col-xl-2">
+            <div class="dashboard-stat-card">
+                <div class="dashboard-stat-top">
+                    <span class="dashboard-stat-icon"><i class="fas fa-flag-checkered"></i></span>
+                    <span class="dashboard-stat-label">Завършени</span>
+                </div>
+                <div class="dashboard-stat-number">@Model.CompletedAttempts</div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-4 col-xl-2">
+            <div class="dashboard-stat-card dashboard-stat-card-accent">
+                <div class="dashboard-stat-top">
+                    <span class="dashboard-stat-icon"><i class="fas fa-percentage"></i></span>
+                    <span class="dashboard-stat-label">Среден резултат</span>
+                </div>
+                <div class="dashboard-stat-number">@Model.AverageScorePercent.ToString("F1")%</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card dashboard-table-card shadow-sm">
+        <div class="card-header dashboard-table-header">
+            <div>
+                <h5 class="mb-1">Последни опити</h5>
+                <small class="dashboard-table-subtitle">Последна активност на учениците</small>
+            </div>
+        </div>
+
         <div class="card-body p-0">
-            <table class="table table-striped mb-0">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Тест</th>
-                        <th>Потребител</th>
-                        <th>Резултат</th>
-                        <th>Започнат</th>
-                        <th>Завършен</th>
-                        <th>Подробности</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach (var item in Model.RecentAttempts)
-                    {
-                            <tr>
-                                <td>@item.ExamTitle</td>
-                                <td>@item.UserId</td>
-                                <td>@item.CorrectCount / @item.TotalQuestions (@item.ScorePercent.ToString("F1")%)</td>
-                                <td>@item.StartedAt.ToLocalTime().ToString("g")</td>
-                                <td>@(item.FinishedAt.HasValue ? item.FinishedAt.Value.ToLocalTime().ToString("g") : "-")</td>
-                                <td>
-                                    <a asp-controller="Exam" asp-action="Result" asp-route-attemptId="@item.AttemptId" class="btn btn-sm btn-outline-primary">
-                                        Виж
-                                    </a>
-                                </td>
-                            </tr>
-                    }
+            <div class="table-responsive">
+                <table class="table dashboard-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Тест</th>
+                            <th>Потребител</th>
+                            <th>Резултат</th>
+                            <th>Започнат</th>
+                            <th>Завършен</th>
+                            <th class="text-center">Подробности</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model.RecentAttempts)
+                        {
+                            var badgeClass = item.ScorePercent >= 80
+                                ? "score-pill score-good"
+                                : item.ScorePercent >= 50
+                                    ? "score-pill score-medium"
+                                    : "score-pill score-low";
 
-                    @if (!Model.RecentAttempts.Any())
-                    {
-                            <tr>
-                                <td colspan="6" class="text-center py-4">Все още няма опити.</td>
-                            </tr>
-                    }
-                </tbody>
-            </table>
+                                <tr>
+                                    <td>
+                                        <div class="fw-semibold">@item.ExamTitle</div>
+                                    </td>
+                                    <td>@item.UserId</td>
+                                    <td>
+                                        <span class="@badgeClass">
+                                        @item.CorrectCount / @item.TotalQuestions (@item.ScorePercent.ToString("F1")%)
+                                        </span>
+                                    </td>
+                                    <td>@item.StartedAt.ToLocalTime().ToString("g")</td>
+                                    <td>
+                                    @(item.FinishedAt.HasValue ? item.FinishedAt.Value.ToLocalTime().ToString("g") : "-")
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-controller="Exam"
+                                           asp-action="Result"
+                                           asp-route-attemptId="@item.AttemptId"
+                                           class="btn btn-sm btn-outline-primary dashboard-view-btn">
+                                            Виж
+                                        </a>
+                                    </td>
+                                </tr>
+                        }
+
+                        @if (!Model.RecentAttempts.Any())
+                        {
+                                <tr>
+                                    <td colspan="6" class="text-center py-5">
+                                        <div class="dashboard-empty-state">
+                                            <i class="fas fa-inbox mb-3"></i>
+                                            <div>Все още няма опити.</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
         </div>
     </div>
 </div>

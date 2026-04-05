@@ -109,5 +109,41 @@ namespace BeReadyForExam.Services.Implementations
         {
             return await _context.Topics.ToListAsync();
         }
+
+
+
+        public async Task<List<Question>> GetFilteredAsync(string? search, int? topicId, int? examId, bool? isActive)
+        {
+            var query = _context.Questions
+                .Include(q => q.Exam)
+                    .ThenInclude(e => e.Topic)
+                .Include(q => q.Options)
+                .AsQueryable();
+
+            if (!string.IsNullOrWhiteSpace(search))
+            {
+                var searchText = search.Trim().ToLower();
+                query = query.Where(q => q.Text.ToLower().Contains(searchText));
+            }
+
+            if (topicId.HasValue)
+            {
+                query = query.Where(q => q.Exam.TopicId == topicId.Value);
+            }
+
+            if (examId.HasValue)
+            {
+                query = query.Where(q => q.ExamId == examId.Value);
+            }
+
+            if (isActive.HasValue)
+            {
+                query = query.Where(q => q.IsActive == isActive.Value);
+            }
+
+            return await query
+                .OrderByDescending(q => q.Id)
+                .ToListAsync();
+        }
     }
 }
