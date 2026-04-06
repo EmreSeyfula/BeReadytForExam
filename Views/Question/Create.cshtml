@@ -22,13 +22,29 @@
                     <span asp-validation-for="Text" class="text-danger"></span>
                 </div>
 
-                <div class="mb-3">
-                    <label asp-for="ExamId" class="form-label">Тест</label>
-                    <select asp-for="ExamId" asp-items="Model.Exams" class="form-select">
-                        <option value="0">-- Избери тест --</option>
-                    </select>
-                    <span asp-validation-for="ExamId" class="text-danger"></span>
-                </div>
+               <div class="row g-3 mb-3">
+               <div class="col-md-4">
+                   <label asp-for="SubjectId" class="form-label">Предмет</label>
+                   <select asp-for="SubjectId" asp-items="Model.Subjects" class="form-select" id="subjectSelect">
+                       <option value="">-- Избери предмет --</option>
+                   </select>
+               </div>
+           
+               <div class="col-md-4">
+                   <label asp-for="TopicId" class="form-label">Тема</label>
+                   <select asp-for="TopicId" asp-items="Model.Topics" class="form-select" id="topicSelect">
+                       <option value="">-- Избери тема --</option>
+                   </select>
+               </div>
+           
+               <div class="col-md-4">
+                   <label asp-for="ExamId" class="form-label">Тест</label>
+                   <select asp-for="ExamId" asp-items="Model.Exams" class="form-select" id="examSelect">
+                       <option value="0">-- Избери тест --</option>
+                   </select>
+                   <span asp-validation-for="ExamId" class="text-danger"></span>
+               </div>
+           </div>
 
                 <div class="form-check form-switch mb-4">
                     <input asp-for="IsActive" class="form-check-input" />

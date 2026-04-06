@@ -112,11 +112,12 @@ namespace BeReadyForExam.Services.Implementations
 
 
 
-        public async Task<List<Question>> GetFilteredAsync(string? search, int? topicId, int? examId, bool? isActive)
+        public async Task<List<Question>> GetFilteredAsync(string? search, int? subjectId, int? topicId, int? examId, bool? isActive)
         {
             var query = _context.Questions
                 .Include(q => q.Exam)
                     .ThenInclude(e => e.Topic)
+                        .ThenInclude(t => t.Subject)
                 .Include(q => q.Options)
                 .AsQueryable();
 
@@ -124,6 +125,11 @@ namespace BeReadyForExam.Services.Implementations
             {
                 var searchText = search.Trim().ToLower();
                 query = query.Where(q => q.Text.ToLower().Contains(searchText));
+            }
+
+            if (subjectId.HasValue)
+            {
+                query = query.Where(q => q.Exam.Topic.SubjectId == subjectId.Value);
             }
 
             if (topicId.HasValue)

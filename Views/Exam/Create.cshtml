@@ -22,7 +22,12 @@
                     <input asp-for="Title" class="form-control" placeholder="Пример: Финален тест по математика" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
-
+                 <div class="mb-3">
+                   <label class="form-label">Предмет</label>
+                   <select id="subjectFilter" asp-items="ViewBag.Subjects" class="form-select">
+                       <option value="">-- Избери предмет --</option>
+                   </select>
+               </div>
                 <div class="mb-3">
                     <label asp-for="TopicId" class="form-label">Тема</label>
                     <select asp-for="TopicId" asp-items="ViewBag.Topics" class="form-select">

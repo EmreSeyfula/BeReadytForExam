@@ -74,8 +74,20 @@ namespace BeReadyForExam.Controllers
                 .Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
-                    Text = t.Name,
+                    Text = $"{t.Subject?.Name} / {t.Name}",
                     Selected = selectedTopicId.HasValue && t.Id == selectedTopicId.Value
+                })
+                .ToList();
+
+            ViewBag.Subjects = (topics ?? new List<Topic>())
+                .Where(t => t.Subject != null)
+                .Select(t => t.Subject!)
+                .GroupBy(s => s.Id)
+                .Select(g => new SelectListItem
+                {
+                    Value = g.Key.ToString(),
+                    Text = g.First().Name,
+                    Selected = selectedTopicId.HasValue && topics.Any(t => t.Id == selectedTopicId.Value && t.SubjectId == g.Key)
                 })
                 .ToList();
         }

@@ -38,6 +38,13 @@
                 </div>
 
                 <div class="col-md-6 col-lg-3">
+                <label class="form-label">Предмет</label>
+                <select asp-for="SubjectId" asp-items="Model.Subjects" class="form-select">
+                    <option value="">Всички предмети</option>
+                </select>
+            </div>
+
+                <div class="col-md-6 col-lg-3">
                     <label class="form-label">Тема</label>
                     <select asp-for="TopicId" asp-items="Model.Topics" class="form-select">
                         <option value="">Всички теми</option>
@@ -89,8 +96,9 @@
                     <thead>
                         <tr>
                             <th>Текст</th>
-                            <th>Тест</th>
+                            <th>Предмет</th>
                             <th>Тема</th>
+                            <th>Тест</th>
                             <th>Статус</th>
                             <th width="220">Действия</th>
                         </tr>
@@ -100,45 +108,44 @@
                         {
                             @foreach (var q in Model.Questions)
                             {
-                                        <tr>
-                                            <td>
-                                                <div class="question-text-cell">@q.Text</div>
-                                            </td>
-                                            <td>@q.Exam?.Title</td>
-                                            <td>@q.Exam?.Topic?.Name</td>
-                                            <td>
+                                                                        <tr data-href="@Url.Action("Edit", "Question", new { id = q.Id })">
+                                    <td><div class="question-text-cell">@q.Text</div></td>
+                                    <td>@q.Exam?.Topic?.Subject?.Name</td>
+                                    <td>@q.Exam?.Topic?.Name</td>
+                                    <td>@q.Exam?.Title</td>
+                                    <td>
                                         @if (q.IsActive)
                                         {
-                                                        <span class="status-pill status-active">Активен</span>
+                                          <span class="status-pill status-active">Активен</span>
                                         }
                                         else
                                         {
-                                                        <span class="status-pill status-inactive">Неактивен</span>
+                                           <span class="status-pill status-inactive">Неактивен</span>
                                         }
-                                            </td>
-                                            <td>
-                                                <div class="d-flex gap-2 flex-wrap">
-                                                    <a asp-action="Edit" asp-route-id="@q.Id" class="btn btn-warning btn-sm">
-                                                        ✏️ Редактирай
-                                                    </a>
-                                                    <a asp-action="Delete" asp-route-id="@q.Id" class="btn btn-danger btn-sm">
-                                                        🗑 Изтрий
-                                                    </a>
-                                                </div>
-                                            </td>
-                                        </tr>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-2 flex-wrap">
+                                            <a asp-action="Edit" asp-route-id="@q.Id" class="btn btn-warning btn-sm" onclick="event.stopPropagation();">
+                                                ✏️ Редактирай
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@q.Id" class="btn btn-danger btn-sm" onclick="event.stopPropagation();">
+                                                🗑 Изтрий
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
                             }
                         }
                         else
                         {
-                                <tr>
-                                    <td colspan="5" class="text-center py-5">
-                                        <div class="questions-empty-state">
-                                            <div class="mb-2" style="font-size: 2rem;">📭</div>
-                                            <div>Няма въпроси по избраните филтри.</div>
-                                        </div>
-                                    </td>
-                                </tr>
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="questions-empty-state">
+                                        <div class="mb-2" style="font-size: 2rem;">📭</div>
+                                        <div>Няма въпроси по избраните филтри.</div>
+                                    </div>
+                                </td>
+                            </tr>
                         }
                     </tbody>
                 </table>
