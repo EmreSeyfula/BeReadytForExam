@@ -117,7 +117,7 @@ namespace BeReadyForExam.Controllers
             var question = await _questionService.GetByIdAsync(id);
             if (question == null) return NotFound();
 
-            var exams = await _examService.GetAllActiveExamsAsync();
+            var exams = await _examService.GetAllAsync();
 
             var vm = new QuestionCreateViewModel
             {
@@ -128,7 +128,8 @@ namespace BeReadyForExam.Controllers
                 Exams = exams.Select(e => new SelectListItem
                 {
                     Value = e.Id.ToString(),
-                    Text = e.Title
+                    Text = e.Title,
+                    Selected = e.Id == question.ExamId
                 }).ToList(),
                 Options = question.Options.Select(o => new OptionInputModel
                 {
@@ -144,6 +145,7 @@ namespace BeReadyForExam.Controllers
 
         [Authorize(Roles = "Teacher,Admin")]
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(QuestionCreateViewModel model)
         {
             NormalizeOptions(model);
@@ -172,7 +174,7 @@ namespace BeReadyForExam.Controllers
 
             await _questionService.UpdateAsync(question);
 
-            return RedirectToAction(nameof(Index));
+            return RedirectToAction(nameof(Index), new { examId = model.ExamId });
         }
 
 
@@ -218,7 +220,7 @@ namespace BeReadyForExam.Controllers
         }
         private async Task LoadExamsAsync(QuestionCreateViewModel model)
         {
-            var exams = await _examService.GetAllActiveExamsAsync();
+            var exams = await _examService.GetAllAsync();
 
             model.Exams = exams.Select(e => new SelectListItem
             {
