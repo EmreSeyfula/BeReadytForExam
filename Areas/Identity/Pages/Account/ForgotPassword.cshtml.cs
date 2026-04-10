@@ -72,7 +72,7 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account
 
                 await _emailSender.SendEmailAsync(
                     Input.Email,
-                    "Reset Password",
+                    "Смяна на парола",
                     $"Моля, нулирайте своята парола, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.");
 
                 return RedirectToPage("./ForgotPasswordConfirmation");

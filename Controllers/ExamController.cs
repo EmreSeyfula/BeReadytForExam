@@ -50,11 +50,6 @@ namespace BeReadyForExam.Controllers
         {
             if (!ModelState.IsValid)
             {
-                var errors = ModelState
-            .Where(x => x.Value.Errors.Count > 0)
-            .Select(x => new { Field = x.Key, Errors = x.Value.Errors.Select(e => e.ErrorMessage).ToList() })
-            .ToList();
-
                 await LoadTopicsAsync(exam.TopicId);
                 return View(exam);
             }
@@ -69,8 +64,9 @@ namespace BeReadyForExam.Controllers
         private async Task LoadTopicsAsync(int? selectedTopicId = null)
         {
             var topics = await _topicService.GetAllAsync();
+            var topicList = topics ?? new List<Topic>();
 
-            ViewBag.Topics = (topics ?? new List<Topic>())
+            ViewBag.Topics = topicList
                 .Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
@@ -79,7 +75,7 @@ namespace BeReadyForExam.Controllers
                 })
                 .ToList();
 
-            ViewBag.Subjects = (topics ?? new List<Topic>())
+            ViewBag.Subjects = topicList
                 .Where(t => t.Subject != null)
                 .Select(t => t.Subject!)
                 .GroupBy(s => s.Id)
@@ -87,7 +83,7 @@ namespace BeReadyForExam.Controllers
                 {
                     Value = g.Key.ToString(),
                     Text = g.First().Name,
-                    Selected = selectedTopicId.HasValue && topics.Any(t => t.Id == selectedTopicId.Value && t.SubjectId == g.Key)
+                    Selected = selectedTopicId.HasValue && topicList.Any(t => t.Id == selectedTopicId.Value && t.SubjectId == g.Key)
                 })
                 .ToList();
         }
@@ -139,6 +135,11 @@ namespace BeReadyForExam.Controllers
         public async Task<IActionResult> Start(int examId)
         {
             var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
             var attemptId = await _examService.StartExamAsync(examId, userId);
             return RedirectToAction("Take", new { attemptId });
         }
@@ -146,6 +147,11 @@ namespace BeReadyForExam.Controllers
         public async Task<IActionResult> Take(int attemptId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
             var canAccessAllAttempts = User.IsInRole("Teacher") || User.IsInRole("Admin");
 
             var exam = await _examService.GetExamAsync(attemptId, userId, canAccessAllAttempts);
@@ -157,6 +163,11 @@ namespace BeReadyForExam.Controllers
         public async Task<IActionResult> Submit(SubmitExamViewModel model)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
             var canAccessAllAttempts = User.IsInRole("Teacher") || User.IsInRole("Admin");
 
             await _examService.SubmitExamAsync(model, userId, canAccessAllAttempts);
@@ -167,6 +178,11 @@ namespace BeReadyForExam.Controllers
         public async Task<IActionResult> Result(int attemptId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
             var canAccessAllAttempts = User.IsInRole("Teacher") || User.IsInRole("Admin");
 
             var vm = await _examService.GetResultAsync(attemptId, userId, canAccessAllAttempts);
@@ -177,8 +193,42 @@ namespace BeReadyForExam.Controllers
         public async Task<IActionResult> MyHistory()
         {
             var userId = _userManager.GetUserId(User);
+            if (string.IsNullOrEmpty(userId))
+            {
+                return Challenge();
+            }
+
             var vm = await _examService.GetMyHistoryAsync(userId);
             return View(vm);
+        }
+
+        [Authorize(Roles = "Teacher,Admin")]
+        [HttpGet]
+        public async Task<IActionResult> ByFilter(int? subjectId, int? topicId)
+        {
+            var exams = await _examService.GetAllAsync();
+
+            var filteredExams = exams.AsEnumerable();
+
+            if (subjectId.HasValue)
+            {
+                filteredExams = filteredExams.Where(e => e.Topic != null && e.Topic.SubjectId == subjectId.Value);
+            }
+
+            if (topicId.HasValue)
+            {
+                filteredExams = filteredExams.Where(e => e.TopicId == topicId.Value);
+            }
+
+            return Json(filteredExams
+                .OrderBy(e => e.Title)
+                .Select(e => new
+                {
+                    id = e.Id,
+                    title = e.Title,
+                    topicId = e.TopicId,
+                    subjectId = e.Topic?.SubjectId
+                }));
         }
     }
 }

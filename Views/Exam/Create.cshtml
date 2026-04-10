@@ -22,7 +22,7 @@
                     <input asp-for="Title" class="form-control" placeholder="Пример: Финален тест по математика" />
                     <span asp-validation-for="Title" class="text-danger"></span>
                 </div>
-                 <div class="mb-3">
+                <div class="mb-3">
                    <label class="form-label">Предмет</label>
                    <select id="subjectFilter" asp-items="ViewBag.Subjects" class="form-select">
                        <option value="">-- Избери предмет --</option>
@@ -30,7 +30,7 @@
                </div>
                 <div class="mb-3">
                     <label asp-for="TopicId" class="form-label">Тема</label>
-                    <select asp-for="TopicId" asp-items="ViewBag.Topics" class="form-select">
+                    <select asp-for="TopicId" asp-items="ViewBag.Topics" class="form-select" id="topicSelect" data-selected-value="@Model.TopicId">
                         <option value="0">-- Избери тема --</option>
                     </select>
                     <span asp-validation-for="TopicId" class="text-danger"></span>
@@ -79,4 +79,15 @@
 
 @section Scripts {
         <partial name="_ValidationScriptsPartial" />
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                window.initSubjectTopicExamFilters?.({
+                    subjectSelector: "#subjectFilter",
+                    topicSelector: "#topicSelect",
+                    topicsUrl: "@Url.Action("BySubject", "Topics")",
+                    topicPlaceholder: "-- Избери тема --",
+                    topicEmptyValue: "0"
+                });
+            });
+        </script>
 }

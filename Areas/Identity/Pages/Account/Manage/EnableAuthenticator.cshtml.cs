@@ -119,7 +119,7 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account.Manage
 
             if (!is2faTokenValid)
             {
-                ModelState.AddModelError("Input.Code", "Verification code is invalid.");
+                ModelState.AddModelError("Input.Code", "Кодът за потвърждение е невалиден.");
                 await LoadSharedKeyAndQrCodeUriAsync(user);
                 return Page();
             }

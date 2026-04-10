@@ -90,7 +90,7 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account.Manage
             var userId = await _userManager.GetUserIdAsync(user);
             if (!result.Succeeded)
             {
-                throw new InvalidOperationException($"Unexpected error occurred deleting user.");
+                throw new InvalidOperationException("Възникна неочаквана грешка при изтриването на потребителя.");
             }
 
             await _signInManager.SignOutAsync();

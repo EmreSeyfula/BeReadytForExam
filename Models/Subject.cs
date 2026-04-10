@@ -7,10 +7,10 @@ namespace BeReadyForExam.Models
         public int Id { get; set; }
         [Display(Name = "Име")]
         [Required(ErrorMessage = "Полето „Име“ е задължително.")]
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
         [Display(Name = "Описание")]
-        public string Description { get; set; }
+        public string Description { get; set; } = string.Empty;
 
-        public ICollection<Topic>? Topics { get; set; }
+        public ICollection<Topic> Topics { get; set; } = new List<Topic>();
     }
 }

@@ -6,7 +6,7 @@ namespace BeReadyForExam.Services.Interfaces
     public interface IExamService
     {
         Task<List<Exam>> GetAllAsync();
-        Task<Exam> GetByIdAsync(int id);
+        Task<Exam?> GetByIdAsync(int id);
         Task<int> CreateAsync(Exam exam);
         Task UpdateAsync(Exam exam);
         Task DeleteAsync(int id);

@@ -9,7 +9,7 @@ namespace BeReadyForExam.ViewModel.Exam
 
         [Required(ErrorMessage = "Полето „Заглавие“ е задължително.")]
         [MaxLength(200)]
-        public string Title { get; set; }
+        public string Title { get; set; } = string.Empty;
 
         [MaxLength(1000)]
         public string? Description { get; set; }

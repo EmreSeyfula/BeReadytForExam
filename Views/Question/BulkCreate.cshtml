@@ -10,6 +10,8 @@
     <partial name="_BackButton" />
 </div>
 <form method="post">
+    @Html.AntiForgeryToken()
+    <div asp-validation-summary="All" class="text-danger mb-3"></div>
     <input type="hidden" asp-for="ExamId" />
 
     <div id="questions-container">

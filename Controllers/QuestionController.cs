@@ -93,6 +93,20 @@ namespace BeReadyForExam.Controllers
             var selectedExam = examId.HasValue ? exams.FirstOrDefault(e => e.Id == examId.Value) : null;
             var selectedTopicId = selectedExam?.TopicId;
             var selectedSubjectId = selectedExam?.Topic?.SubjectId;
+            var filteredTopics = selectedSubjectId.HasValue
+                ? topics.Where(t => t.SubjectId == selectedSubjectId.Value).ToList()
+                : topics;
+            var filteredExams = exams.AsEnumerable();
+
+            if (selectedSubjectId.HasValue)
+            {
+                filteredExams = filteredExams.Where(e => e.Topic != null && e.Topic.SubjectId == selectedSubjectId.Value);
+            }
+
+            if (selectedTopicId.HasValue)
+            {
+                filteredExams = filteredExams.Where(e => e.TopicId == selectedTopicId.Value);
+            }
 
             var vm = new QuestionCreateViewModel
             {
@@ -105,13 +119,13 @@ namespace BeReadyForExam.Controllers
                     Text = s.Name,
                     Selected = selectedSubjectId.HasValue && s.Id == selectedSubjectId.Value
                 }).ToList(),
-                Topics = topics.Select(t => new SelectListItem
+                Topics = filteredTopics.Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
                     Text = t.Name,
                     Selected = selectedTopicId.HasValue && t.Id == selectedTopicId.Value
                 }).ToList(),
-                Exams = exams.Select(e => new SelectListItem
+                Exams = filteredExams.Select(e => new SelectListItem
                 {
                     Value = e.Id.ToString(),
                     Text = e.Title,
@@ -171,6 +185,20 @@ namespace BeReadyForExam.Controllers
             var selectedExam = exams.FirstOrDefault(e => e.Id == question.ExamId);
             var selectedTopicId = selectedExam?.TopicId;
             var selectedSubjectId = selectedExam?.Topic?.SubjectId;
+            var filteredTopics = selectedSubjectId.HasValue
+                ? topics.Where(t => t.SubjectId == selectedSubjectId.Value).ToList()
+                : topics;
+            var filteredExams = exams.AsEnumerable();
+
+            if (selectedSubjectId.HasValue)
+            {
+                filteredExams = filteredExams.Where(e => e.Topic != null && e.Topic.SubjectId == selectedSubjectId.Value);
+            }
+
+            if (selectedTopicId.HasValue)
+            {
+                filteredExams = filteredExams.Where(e => e.TopicId == selectedTopicId.Value);
+            }
 
             var vm = new QuestionCreateViewModel
             {
@@ -188,14 +216,14 @@ namespace BeReadyForExam.Controllers
                     Selected = selectedSubjectId.HasValue && s.Id == selectedSubjectId.Value
                 }).ToList(),
 
-                Topics = topics.Select(t => new SelectListItem
+                Topics = filteredTopics.Select(t => new SelectListItem
                 {
                     Value = t.Id.ToString(),
                     Text = t.Name,
                     Selected = selectedTopicId.HasValue && t.Id == selectedTopicId.Value
                 }).ToList(),
 
-                Exams = exams.Select(e => new SelectListItem
+                Exams = filteredExams.Select(e => new SelectListItem
                 {
                     Value = e.Id.ToString(),
                     Text = e.Title,
@@ -294,6 +322,20 @@ namespace BeReadyForExam.Controllers
             var subjects = await _subjectService.GetAllAsync();
             var topics = await _topicService.GetAllAsync();
             var exams = await _examService.GetAllAsync();
+            var filteredTopics = model.SubjectId.HasValue
+                ? topics.Where(t => t.SubjectId == model.SubjectId.Value).ToList()
+                : topics;
+            var filteredExams = exams.AsEnumerable();
+
+            if (model.SubjectId.HasValue)
+            {
+                filteredExams = filteredExams.Where(e => e.Topic != null && e.Topic.SubjectId == model.SubjectId.Value);
+            }
+
+            if (model.TopicId.HasValue)
+            {
+                filteredExams = filteredExams.Where(e => e.TopicId == model.TopicId.Value);
+            }
 
             model.Subjects = subjects.Select(s => new SelectListItem
             {
@@ -302,14 +344,14 @@ namespace BeReadyForExam.Controllers
                 Selected = model.SubjectId.HasValue && s.Id == model.SubjectId.Value
             }).ToList();
 
-            model.Topics = topics.Select(t => new SelectListItem
+            model.Topics = filteredTopics.Select(t => new SelectListItem
             {
                 Value = t.Id.ToString(),
                 Text = t.Name,
                 Selected = model.TopicId.HasValue && t.Id == model.TopicId.Value
             }).ToList();
 
-            model.Exams = exams.Select(e => new SelectListItem
+            model.Exams = filteredExams.Select(e => new SelectListItem
             {
                 Value = e.Id.ToString(),
                 Text = e.Title,
@@ -332,19 +374,52 @@ namespace BeReadyForExam.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> BulkCreate(BulkCreateQuestionsViewModel model)
         {
+            model.Questions ??= new List<QuestionInputModel>();
+
+            for (int i = 0; i < model.Questions.Count; i++)
+            {
+                var q = model.Questions[i];
+                q.Options = (q.Options ?? new List<OptionInputModel>())
+                    .Where(o => !string.IsNullOrWhiteSpace(o.Text))
+                    .Select(o => new OptionInputModel
+                    {
+                        Id = o.Id,
+                        Text = o.Text.Trim(),
+                        IsCorrect = o.IsCorrect
+                    })
+                    .ToList();
+
+                if (string.IsNullOrWhiteSpace(q.Text)) continue;
+
+                if (q.Options.Count < 2)
+                {
+                    ModelState.AddModelError(string.Empty, $"Въпрос #{i + 1} трябва да има поне 2 отговора.");
+                }
+
+                if (!q.Options.Any(o => o.IsCorrect))
+                {
+                    ModelState.AddModelError(string.Empty, $"Въпрос #{i + 1} трябва да има поне един верен отговор.");
+                }
+            }
+
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             foreach (var q in model.Questions)
             {
                 if (string.IsNullOrWhiteSpace(q.Text)) continue;
 
                 var question = new Question
                 {
-                    Text = q.Text,
+                    Text = q.Text.Trim(),
                     ExamId = model.ExamId,
                     IsActive = q.IsActive,
                     Options = q.Options
-                        .Where(o => !string.IsNullOrWhiteSpace(o.Text))
                         .Select(o => new Option
                         {
                             Text = o.Text,

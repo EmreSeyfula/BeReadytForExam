@@ -115,6 +115,10 @@ namespace BeReadyForExam.Migrations
                     b.Property<double>("Grade")
                         .HasColumnType("float");
 
+                    b.Property<string>("QuestionSnapshot")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<double>("ScorePercent")
                         .HasColumnType("float");
 

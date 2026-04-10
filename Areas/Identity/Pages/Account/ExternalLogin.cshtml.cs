@@ -101,7 +101,7 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account
             returnUrl = returnUrl ?? Url.Content("~/");
             if (remoteError != null)
             {
-                ErrorMessage = $"Error from external provider: {remoteError}";
+                ErrorMessage = $"Грешка от външния доставчик: {remoteError}";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
             var info = await _signInManager.GetExternalLoginInfoAsync();
@@ -145,7 +145,7 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account
             var info = await _signInManager.GetExternalLoginInfoAsync();
             if (info == null)
             {
-                ErrorMessage = "Error loading external login information during confirmation.";
+                    ErrorMessage = "Грешка при зареждането на информацията за външен вход по време на потвърждението.";
                 return RedirectToPage("./Login", new { ReturnUrl = returnUrl });
             }
 

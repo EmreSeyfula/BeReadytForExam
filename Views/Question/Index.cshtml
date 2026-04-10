@@ -39,21 +39,21 @@
 
                 <div class="col-md-6 col-lg-3">
                 <label class="form-label">Предмет</label>
-                <select asp-for="SubjectId" asp-items="Model.Subjects" class="form-select">
+                <select asp-for="SubjectId" asp-items="Model.Subjects" class="form-select" id="subjectSelect">
                     <option value="">Всички предмети</option>
                 </select>
             </div>
 
                 <div class="col-md-6 col-lg-3">
                     <label class="form-label">Тема</label>
-                    <select asp-for="TopicId" asp-items="Model.Topics" class="form-select">
+                    <select asp-for="TopicId" asp-items="Model.Topics" class="form-select" id="topicSelect" data-selected-value="@Model.TopicId">
                         <option value="">Всички теми</option>
                     </select>
                 </div>
 
                 <div class="col-md-6 col-lg-3">
                     <label class="form-label">Тест</label>
-                    <select asp-for="ExamId" asp-items="Model.Exams" class="form-select">
+                    <select asp-for="ExamId" asp-items="Model.Exams" class="form-select" id="examSelect" data-selected-value="@Model.ExamId">
                         <option value="">Всички тестове</option>
                     </select>
                 </div>
@@ -153,3 +153,20 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            window.initSubjectTopicExamFilters?.({
+                subjectSelector: "#subjectSelect",
+                topicSelector: "#topicSelect",
+                examSelector: "#examSelect",
+                topicsUrl: "@Url.Action("BySubject", "Topics")",
+                examsUrl: "@Url.Action("ByFilter", "Exam")",
+                topicPlaceholder: "Всички теми",
+                examPlaceholder: "Всички тестове",
+                examEmptyValue: ""
+            });
+        });
+    </script>
+}

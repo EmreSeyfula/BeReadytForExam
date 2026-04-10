@@ -7,7 +7,7 @@
     public class MyExamAttemptRowVM
     {
         public int AttemptId { get; set; }
-        public string TopicName { get; set; }
+        public string TopicName { get; set; } = string.Empty;
         public DateTime StartedAt { get; set; }
         public DateTime? FinishedAt { get; set; }
         public int TotalQuestions { get; set; }

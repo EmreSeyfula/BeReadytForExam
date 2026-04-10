@@ -95,3 +95,149 @@ function addQuestion() {
 
     container.insertAdjacentHTML('beforeend', html);
 }
+
+window.initSubjectTopicExamFilters = function (config) {
+    const subjectSelect = document.querySelector(config.subjectSelector);
+    const topicSelect = config.topicSelector ? document.querySelector(config.topicSelector) : null;
+    const examSelect = config.examSelector ? document.querySelector(config.examSelector) : null;
+
+    if (!subjectSelect || !topicSelect) {
+        return;
+    }
+
+    const topicsUrl = config.topicsUrl;
+    const examsUrl = config.examsUrl;
+    const topicPlaceholder = config.topicPlaceholder ?? '-- Избери тема --';
+    const examPlaceholder = config.examPlaceholder ?? '-- Избери тест --';
+    const topicEmptyValue = config.topicEmptyValue ?? '';
+    const examEmptyValue = config.examEmptyValue ?? '';
+
+    const createOption = (value, text, selected) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = text;
+        option.selected = selected;
+        return option;
+    };
+
+    const fillSelect = (select, items, selectedValue, placeholder, emptyValue, mapText) => {
+        if (!select) {
+            return;
+        }
+
+        select.innerHTML = '';
+        select.appendChild(createOption(emptyValue, placeholder, !selectedValue));
+
+        items.forEach(item => {
+            const value = String(item.id);
+            select.appendChild(createOption(value, mapText(item), value === selectedValue));
+        });
+    };
+
+    const fetchJson = async (url) => {
+        const response = await fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        });
+
+        if (!response.ok) {
+            throw new Error('Неуспешно зареждане на данните.');
+        }
+
+        return await response.json();
+    };
+
+    const loadTopics = async (selectedTopicValue) => {
+        const subjectId = subjectSelect.value;
+        const url = new URL(topicsUrl, window.location.origin);
+
+        if (subjectId) {
+            url.searchParams.set('subjectId', subjectId);
+        }
+
+        const topics = await fetchJson(url);
+        const topicExists = topics.some(topic => String(topic.id) === String(selectedTopicValue));
+
+        fillSelect(
+            topicSelect,
+            topics,
+            topicExists ? String(selectedTopicValue) : '',
+            topicPlaceholder,
+            topicEmptyValue,
+            topic => topic.name
+        );
+    };
+
+    const loadExams = async (selectedExamValue) => {
+        if (!examSelect || !examsUrl) {
+            return;
+        }
+
+        const url = new URL(examsUrl, window.location.origin);
+
+        if (subjectSelect.value) {
+            url.searchParams.set('subjectId', subjectSelect.value);
+        }
+
+        if (topicSelect.value) {
+            url.searchParams.set('topicId', topicSelect.value);
+        }
+
+        const exams = await fetchJson(url);
+        const examExists = exams.some(exam => String(exam.id) === String(selectedExamValue));
+
+        fillSelect(
+            examSelect,
+            exams,
+            examExists ? String(selectedExamValue) : '',
+            examPlaceholder,
+            examEmptyValue,
+            exam => exam.title
+        );
+    };
+
+    const initialize = async () => {
+        const selectedTopicValue = topicSelect.dataset.selectedValue || topicSelect.value;
+        const selectedExamValue = examSelect?.dataset.selectedValue || examSelect?.value || '';
+
+        try {
+            await loadTopics(selectedTopicValue);
+            await loadExams(selectedExamValue);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    subjectSelect.addEventListener('change', async () => {
+        topicSelect.dataset.selectedValue = '';
+        if (examSelect) {
+            examSelect.dataset.selectedValue = '';
+        }
+
+        try {
+            await loadTopics('');
+            await loadExams('');
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    topicSelect.addEventListener('change', async () => {
+        topicSelect.dataset.selectedValue = topicSelect.value;
+
+        if (!examSelect) {
+            return;
+        }
+
+        examSelect.dataset.selectedValue = '';
+
+        try {
+            await loadExams('');
+        } catch (error) {
+            console.error(error);
+        }
+    });
+
+    initialize();
+};

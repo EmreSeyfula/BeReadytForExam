@@ -10,15 +10,15 @@ namespace BeReadyForExam.Models
         [Display(Name = "Тест")]
         public int ExamId { get; set; }
 
-        public Exam Exam { get; set; }
+        public Exam Exam { get; set; } = null!;
 
         [Display(Name = "Текст")]
         [Required(ErrorMessage = "Полето „Текст“ е задължително.")]
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
         [Display(Name = "Активен")]
         public bool IsActive { get; set; }
 
-            public ICollection<Option>? Options { get; set; }
+            public ICollection<Option> Options { get; set; } = new List<Option>();
         }
 }
 

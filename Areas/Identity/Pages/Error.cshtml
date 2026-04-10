@@ -10,14 +10,14 @@
 @if (Model.ShowRequestId)
 {
     <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+        <strong>Идентификатор на заявката:</strong> <code>@Model.RequestId</code>
     </p>
 }
 
-<h3>Development Mode</h3>
+<h3>Режим за разработка</h3>
 <p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
+    Превключването към среда <strong>Development</strong> ще покаже по-подробна информация за възникналата грешка.
 </p>
 <p>
-    <strong>Development environment should not be enabled in deployed applications</strong>, as it can result in sensitive information from exceptions being displayed to end users. For local debugging, development environment can be enabled by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>, and restarting the application.
+    <strong>Средата Development не трябва да бъде активирана в публикувани приложения</strong>, защото може да покаже чувствителна информация от изключенията на крайните потребители. За локално дебъгване можете да активирате средата за разработка, като зададете променливата <strong>ASPNETCORE_ENVIRONMENT</strong> на <strong>Development</strong> и рестартирате приложението.
 </p>

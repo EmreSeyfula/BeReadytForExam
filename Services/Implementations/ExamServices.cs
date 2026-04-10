@@ -21,18 +21,70 @@ namespace BeReadyForExam.Services.Implementations
         {
             var attempt = await _context.ExamAttempts
                 .Include(a => a.Exam)
+                .Include(a => a.AttemptAnswers)
                 .FirstOrDefaultAsync(a => a.Id == attemptId);
 
             if (attempt == null)
-                throw new InvalidOperationException("Attempt not found.");
+                throw new InvalidOperationException("Опитът не е намерен.");
 
             if (!canAccessAllAttempts && attempt.UserId != userId)
-                throw new UnauthorizedAccessException("You do not have access to this attempt.");
+                throw new UnauthorizedAccessException("Нямате достъп до този опит.");
 
             return attempt;
         }
 
         private readonly ApplicationDbContext _context;
+
+        private static string BuildQuestionSnapshot(IEnumerable<int> questionIds)
+            => string.Join(",", questionIds);
+
+        private static List<int> ParseQuestionSnapshot(string? snapshot)
+        {
+            if (string.IsNullOrWhiteSpace(snapshot))
+            {
+                return new List<int>();
+            }
+
+            return snapshot
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+                .Select(id => int.TryParse(id, out var parsedId) ? parsedId : 0)
+                .Where(id => id > 0)
+                .Distinct()
+                .ToList();
+        }
+
+        private async Task<List<int>> GetAttemptQuestionIdsAsync(ExamAttempt attempt)
+        {
+            var snapshotIds = ParseQuestionSnapshot(attempt.QuestionSnapshot);
+            if (snapshotIds.Count > 0)
+            {
+                return snapshotIds;
+            }
+
+            var answeredQuestionIds = attempt.AttemptAnswers?
+                .Select(a => a.QuestionId)
+                .Distinct()
+                .ToList();
+
+            if (answeredQuestionIds is { Count: > 0 })
+            {
+                return answeredQuestionIds;
+            }
+
+            var questions = await _context.Questions
+                .Where(q => q.ExamId == attempt.ExamId && q.IsActive)
+                .Select(q => q.Id)
+                .ToListAsync();
+
+            questions = attempt.Exam.RandomizeQuestions
+                ? questions.OrderBy(id => id ^ attempt.Id).ToList()
+                : questions.OrderBy(id => id).ToList();
+
+            return attempt.TotalQuestions > 0
+                ? questions.Take(attempt.TotalQuestions).ToList()
+                : questions;
+        }
+
         public async Task<List<Exam>> GetAllAsync()
         {
             return await _context.Exams
@@ -46,12 +98,12 @@ namespace BeReadyForExam.Services.Implementations
             return await _context.Exams
                 .Include(e => e.Topic)
                 .Where(e => e.IsActive)
-                .OrderBy(e => e.Topic.Name)
+                .OrderBy(e => e.Topic != null ? e.Topic.Name : string.Empty)
                 .ThenBy(e => e.Title)
                 .ToListAsync();
         }
 
-        public async Task<Exam> GetByIdAsync(int id)
+        public async Task<Exam?> GetByIdAsync(int id)
         {
             return await _context.Exams
                 .Include(e => e.Topic)
@@ -69,7 +121,7 @@ namespace BeReadyForExam.Services.Implementations
         {
             var dbExam = await _context.Exams.FirstOrDefaultAsync(e => e.Id == exam.Id);
             if (dbExam == null)
-                throw new InvalidOperationException("Exam not found.");
+                throw new InvalidOperationException("Тестът не е намерен.");
 
             dbExam.Title = exam.Title;
             dbExam.TopicId = exam.TopicId;
@@ -106,14 +158,14 @@ namespace BeReadyForExam.Services.Implementations
                 .FirstOrDefaultAsync(e => e.Id == examId && e.IsActive);
 
             if (exam == null)
-                throw new InvalidOperationException("Exam not found.");
+                throw new InvalidOperationException("Тестът не е намерен.");
 
             var questions = await _context.Questions
                 .Where(q => q.ExamId == examId && q.IsActive)
                 .ToListAsync();
 
             if (!questions.Any())
-                throw new InvalidOperationException("This exam has no active questions.");
+                throw new InvalidOperationException("Този тест няма активни въпроси.");
 
             if (exam.RandomizeQuestions)
             {
@@ -129,12 +181,17 @@ namespace BeReadyForExam.Services.Implementations
                     .ToList();
             }
 
+            var selectedQuestionIds = questions
+                .Select(q => q.Id)
+                .ToList();
+
             var attempt = new ExamAttempt
             {
                 UserId = userId,
                 ExamId = examId,
                 StartedAt = DateTime.UtcNow,
-                TotalQuestions = questions.Count
+                QuestionSnapshot = BuildQuestionSnapshot(selectedQuestionIds),
+                TotalQuestions = selectedQuestionIds.Count
             };
 
             _context.ExamAttempts.Add(attempt);
@@ -147,25 +204,20 @@ namespace BeReadyForExam.Services.Implementations
         public async Task<TakeExamViewModel> GetExamAsync(int attemptId, string userId, bool canAccessAllAttempts = false)
         {
             var attempt = await GetAccessibleAttemptAsync(attemptId, userId, canAccessAllAttempts);
+            var questionIds = await GetAttemptQuestionIdsAsync(attempt);
 
             var questions = await _context.Questions
-                .Where(q => q.ExamId == attempt.ExamId && q.IsActive)
+                .Where(q => questionIds.Contains(q.Id))
                 .Include(q => q.Options)
                 .ToListAsync();
 
-            if (attempt.Exam.RandomizeQuestions)
-            {
-                questions = questions
-                    .OrderBy(q => q.Id ^ attempt.Id)
-                    .ToList();
-            }
+            var questionOrder = questionIds
+                .Select((id, index) => new { id, index })
+                .ToDictionary(x => x.id, x => x.index);
 
-            if (attempt.Exam.QuestionsCount > 0 && questions.Count > attempt.TotalQuestions)
-            {
-                questions = questions
-                    .Take(attempt.TotalQuestions)
-                    .ToList();
-            }
+            questions = questions
+                .OrderBy(q => questionOrder.TryGetValue(q.Id, out var index) ? index : int.MaxValue)
+                .ToList();
 
             var deadlineUtc = attempt.Exam.TimeLimitMinutes.HasValue
                 ? attempt.StartedAt.AddMinutes(attempt.Exam.TimeLimitMinutes.Value)
@@ -207,17 +259,27 @@ namespace BeReadyForExam.Services.Implementations
                 return;
 
             var exam = attempt.Exam;
+            var questionIds = await GetAttemptQuestionIdsAsync(attempt);
 
             if (exam.TimeLimitMinutes.HasValue)
             {
                 var deadlineUtc = attempt.StartedAt.AddMinutes(exam.TimeLimitMinutes.Value);
                 if (DateTime.UtcNow > deadlineUtc)
                 {
-                    attempt.FinishedAt = DateTime.UtcNow;
-                    await _context.SaveChangesAsync();
-                    return;
+                    attempt.FinishedAt = deadlineUtc;
                 }
             }
+
+            var allowedQuestions = await _context.Questions
+                .Where(q => questionIds.Contains(q.Id))
+                .Select(q => new
+                {
+                    q.Id,
+                    OptionIds = q.Options.Select(o => new { o.Id, o.IsCorrect }).ToList()
+                })
+                .ToListAsync();
+
+            var allowedQuestionMap = allowedQuestions.ToDictionary(q => q.Id);
 
             var existingAnswers = await _context.AttemptAnswers
                 .Where(a => a.ExamAttemptId == attempt.Id)
@@ -230,11 +292,17 @@ namespace BeReadyForExam.Services.Implementations
 
             int correct = 0;
 
-            foreach (var answer in model.Answers)
-            {
-                var option = await _context.Options
-                    .FirstOrDefaultAsync(o => o.Id == answer.SelectedOptionId);
+            var submittedAnswers = (model.Answers ?? new List<ExamAnswerInputVM>())
+                .GroupBy(a => a.QuestionId)
+                .Select(g => g.First())
+                .ToList();
 
+            foreach (var answer in submittedAnswers)
+            {
+                if (!allowedQuestionMap.TryGetValue(answer.QuestionId, out var allowedQuestion))
+                    continue;
+
+                var option = allowedQuestion.OptionIds.FirstOrDefault(o => o.Id == answer.SelectedOptionId);
                 if (option == null)
                     continue;
 
@@ -252,10 +320,11 @@ namespace BeReadyForExam.Services.Implementations
                 _context.AttemptAnswers.Add(attemptAnswer);
             }
 
+            attempt.TotalQuestions = questionIds.Count;
             attempt.CorrectCount = correct;
             attempt.ScorePercent = attempt.TotalQuestions == 0 ? 0 : (double)correct / attempt.TotalQuestions * 100;
             attempt.Grade = 2 + (attempt.ScorePercent / 100.0) * 4;
-            attempt.FinishedAt = DateTime.UtcNow;
+            attempt.FinishedAt ??= DateTime.UtcNow;
 
             await _context.SaveChangesAsync();
         }
@@ -310,7 +379,7 @@ namespace BeReadyForExam.Services.Implementations
                 {
                     Id = e.Id,
                     Title = e.Title,
-                    TopicName = e.Topic.Name,
+                    TopicName = e.Topic != null ? e.Topic.Name : "Без тема",
                     IsActive = e.IsActive,
                     ConfiguredQuestionsCount = e.QuestionsCount,
                     ActualQuestionsInBank = _context.Questions.Count(q => q.ExamId == e.Id)

@@ -59,7 +59,7 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account.Manage
             _logger.LogInformation("User with ID '{UserId}' has reset their authentication app key.", user.Id);
 
             await _signInManager.RefreshSignInAsync(user);
-            StatusMessage = "Your authenticator app key has been reset, you will need to configure your authenticator app using the new key.";
+            StatusMessage = "Ключът на приложението за автентикация беше нулиран. Трябва да настроите приложението отново с новия ключ.";
 
             return RedirectToPage("./EnableAuthenticator");
         }

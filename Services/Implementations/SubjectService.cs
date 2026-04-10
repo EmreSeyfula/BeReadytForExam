@@ -19,7 +19,7 @@ namespace BeReadyForExam.Services.Implementations
             return await _context.Subjects.ToListAsync();
         }
 
-        public async Task<Subject> GetByIdAsync(int id)
+        public async Task<Subject?> GetByIdAsync(int id)
         {
             return await _context.Subjects.FindAsync(id);
         }

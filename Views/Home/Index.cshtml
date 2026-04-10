@@ -14,7 +14,7 @@
                     Интерактивна платформа за подготовка с въпроси, теми и предмети.
                     Учете ефективно и постигнете отлични резултати!
                 </p>
-                @if (!User.Identity.IsAuthenticated)
+                @if (User.Identity?.IsAuthenticated != true)
                 {
                         <div class="d-flex gap-3">
                             <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-primary btn-lg">
@@ -124,7 +124,7 @@
                     <h4 class="mb-0"><i class="fas fa-chart-line me-2"></i>Вашият прогрес</h4>
                 </div>
                 <div class="card-body">
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity?.IsAuthenticated == true)
                     {
                             <div class="mb-4">
                                 <div class="d-flex justify-content-between mb-2">
@@ -169,7 +169,7 @@
                 <div class="card-body py-5">
                     <h3 class="mb-3">Готови ли сте да започнете?</h3>
                     <p class="mb-4">Присъединете се към хилядите ученици, които вече се подготвят с нас</p>
-                    @if (!User.Identity.IsAuthenticated)
+                    @if (User.Identity?.IsAuthenticated != true)
                     {
                             <a asp-area="Identity" asp-page="/Account/Register" class="btn btn-light btn-lg">
                                 <i class="fas fa-rocket me-2"></i>Започнете безплатно

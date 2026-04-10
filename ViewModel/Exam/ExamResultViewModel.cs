@@ -3,7 +3,7 @@
     public class ExamResultViewModel
     {
         public int AttemptId { get; set; }
-        public string TopicName { get; set; }
+        public string TopicName { get; set; } = string.Empty;
 
         public int TotalQuestions { get; set; }
         public int CorrectCount { get; set; }
@@ -18,9 +18,9 @@
 
     public class WrongAnswerVM
     {
-        public string QuestionText { get; set; }
-        public string SelectedOptionText { get; set; }
-        public string CorrectOptionText { get; set; }
+        public string QuestionText { get; set; } = string.Empty;
+        public string SelectedOptionText { get; set; } = string.Empty;
+        public string CorrectOptionText { get; set; } = string.Empty;
     }
 }
 

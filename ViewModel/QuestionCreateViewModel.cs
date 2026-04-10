@@ -8,7 +8,7 @@ namespace BeReadyForExam.ViewModel
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Полето „Текст“ е задължително.")]
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         public int? SubjectId { get; set; }
         public int? TopicId { get; set; }
@@ -29,7 +29,7 @@ namespace BeReadyForExam.ViewModel
         public int Id { get; set; }
 
         [Required(ErrorMessage = "Полето „Текст на отговора“ е задължително.")]
-        public string Text { get; set; }
+        public string Text { get; set; } = string.Empty;
 
         [Display(Name = "Верен")]
         public bool IsCorrect { get; set; }

@@ -17,7 +17,7 @@ namespace BeReadyForExam.Services.Implementations
                 .Include(t => t.Subject)
                 .ToListAsync();
         }
-        public async Task<Topic> GetByIdAsync(int id)
+        public async Task<Topic?> GetByIdAsync(int id)
         {
             return await _context.Topics
                 .Include(t => t.Subject)

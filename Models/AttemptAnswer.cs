@@ -12,8 +12,8 @@
 
         public bool IsCorrect { get; set; }
 
-        public ExamAttempt ExamAttempt { get; set; }
-        public Question Question { get; set; }
-        public Option SelectedOption { get; set; }
+        public ExamAttempt ExamAttempt { get; set; } = null!;
+        public Question Question { get; set; } = null!;
+        public Option SelectedOption { get; set; } = null!;
     }
 }

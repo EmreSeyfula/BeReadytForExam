@@ -5,9 +5,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Localization;
 using System.Globalization;
-using BeReadyForExam.Models;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using System.Reflection;
 
 namespace BeReadyForExam
 {
@@ -18,7 +15,7 @@ namespace BeReadyForExam
             var builder = WebApplication.CreateBuilder(args);
 
             var connectionString = builder.Configuration.GetConnectionString("DefaultConnection")
-                ?? throw new InvalidOperationException("���� ������� connection string 'DefaultConnection'.");
+                ?? throw new InvalidOperationException("Липсва низ за връзка „DefaultConnection“.");
 
             builder.Services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(connectionString));
@@ -84,13 +81,12 @@ namespace BeReadyForExam
                 await db.Database.MigrateAsync();
             }
 
-            await identityseed.SeedAsync(app.Services);
-            await BeReadyForExam.Data.identityseed.SeedAsync(app.Services);
+            await IdentitySeed.SeedAsync(app.Services);
+            await AppDataSeed.SeedAsync(app.Services);
 
             app.Run();
 
 
-       
-       }
+        }
     }
 }

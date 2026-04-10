@@ -75,7 +75,7 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account
         {
             if (code == null)
             {
-                return BadRequest("A code must be supplied for password reset.");
+                return BadRequest("Трябва да бъде подаден код за нулиране на паролата.");
             }
             else
             {

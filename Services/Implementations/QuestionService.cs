@@ -28,7 +28,7 @@ namespace BeReadyForExam.Services.Implementations
             return await query.ToListAsync();
         }
 
-        public async Task<Question> GetByIdAsync(int id)
+        public async Task<Question?> GetByIdAsync(int id)
         {
             return await _context.Questions
              .Include(q => q.Options)
@@ -49,7 +49,7 @@ namespace BeReadyForExam.Services.Implementations
                 .FirstOrDefaultAsync(q => q.Id == updated.Id);
 
             if (dbQuestion == null)
-                throw new InvalidOperationException("Question not found.");
+                throw new InvalidOperationException("Въпросът не е намерен.");
 
             dbQuestion.Text = updated.Text;
             dbQuestion.ExamId = updated.ExamId;
@@ -117,7 +117,7 @@ namespace BeReadyForExam.Services.Implementations
             var query = _context.Questions
                 .Include(q => q.Exam)
                     .ThenInclude(e => e.Topic)
-                        .ThenInclude(t => t.Subject)
+                        .ThenInclude(t => t != null ? t.Subject : null)
                 .Include(q => q.Options)
                 .AsQueryable();
 
@@ -129,7 +129,7 @@ namespace BeReadyForExam.Services.Implementations
 
             if (subjectId.HasValue)
             {
-                query = query.Where(q => q.Exam.Topic.SubjectId == subjectId.Value);
+                query = query.Where(q => q.Exam.Topic != null && q.Exam.Topic.SubjectId == subjectId.Value);
             }
 
             if (topicId.HasValue)

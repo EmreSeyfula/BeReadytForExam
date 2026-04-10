@@ -35,14 +35,14 @@
              
                  <div class="col-md-4">
                      <label asp-for="TopicId" class="form-label">Тема</label>
-                     <select asp-for="TopicId" asp-items="Model.Topics" class="form-select" id="topicSelect">
+                     <select asp-for="TopicId" asp-items="Model.Topics" class="form-select" id="topicSelect" data-selected-value="@Model.TopicId">
                          <option value="">-- Избери тема --</option>
                      </select>
                  </div>
              
                  <div class="col-md-4">
                      <label asp-for="ExamId" class="form-label">Тест</label>
-                     <select asp-for="ExamId" asp-items="Model.Exams" class="form-select" id="examSelect">
+                     <select asp-for="ExamId" asp-items="Model.Exams" class="form-select" id="examSelect" data-selected-value="@Model.ExamId">
                          <option value="0">-- Избери тест --</option>
                      </select>
                      <span asp-validation-for="ExamId" class="text-danger"></span>
@@ -67,7 +67,7 @@
                     @for (int i = 0; i < Model.Options.Count; i++)
                     {
                             <div class="row g-2 align-items-center mb-2 option-row">
-                              
+                                <input type="hidden" name="Options[@i].Id" value="@Model.Options[i].Id" />
 
                                 <div class="col-md-8">
                                     <input name="Options[@i].Text"
@@ -106,83 +106,79 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener("DOMContentLoaded", function () {
-        const subjectSelect = document.getElementById("subjectSelect");
-        const topicSelect = document.getElementById("topicSelect");
-        const examSelect = document.getElementById("examSelect");
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            window.initSubjectTopicExamFilters?.({
+                subjectSelector: "#subjectSelect",
+                topicSelector: "#topicSelect",
+                examSelector: "#examSelect",
+                topicsUrl: "@Url.Action("BySubject", "Topics")",
+                examsUrl: "@Url.Action("ByFilter", "Exam")",
+                topicPlaceholder: "-- Избери тема --",
+                examPlaceholder: "-- Избери тест --",
+                examEmptyValue: "0"
+            });
+        });
 
-        const allTopicOptions = Array.from(topicSelect.options).map(o => ({
-            value: o.value,
-            text: o.text,
-            subjectId: o.getAttribute("data-subject")
-        }));
+        const optionsContainer = document.getElementById("optionsContainer");
+        const addOptionBtn = document.getElementById("addOption");
 
-        const allExamOptions = Array.from(examSelect.options).map(o => ({
-            value: o.value,
-            text: o.text,
-            subjectId: o.getAttribute("data-subject"),
-            topicId: o.getAttribute("data-topic")
-        }));
+        function reindexOptions() {
+            const rows = optionsContainer.querySelectorAll(".option-row");
 
-        function refreshTopics() {
-            const selectedSubject = subjectSelect.value;
-            const currentTopic = topicSelect.value;
+            rows.forEach((row, index) => {
+                const hiddenId = row.querySelector('input[type="hidden"][name*=".Id"]');
+                const textInput = row.querySelector('input[type="text"]');
+                const hiddenFalse = row.querySelector('input[type="hidden"][name*=".IsCorrect"]');
+                const checkbox = row.querySelector('input[type="checkbox"]');
 
-            topicSelect.innerHTML = '<option value="">-- Избери тема --</option>';
-
-            allTopicOptions.forEach(opt => {
-                if (!opt.value) return;
-                if (!selectedSubject || opt.subjectId === selectedSubject) {
-                    const option = document.createElement("option");
-                    option.value = opt.value;
-                    option.text = opt.text;
-                    option.setAttribute("data-subject", opt.subjectId || "");
-                    if (opt.value === currentTopic) option.selected = true;
-                    topicSelect.appendChild(option);
-                }
+                if (hiddenId) hiddenId.name = `Options[${index}].Id`;
+                if (textInput) textInput.name = `Options[${index}].Text`;
+                if (hiddenFalse) hiddenFalse.name = `Options[${index}].IsCorrect`;
+                if (checkbox) checkbox.name = `Options[${index}].IsCorrect`;
             });
         }
 
-        function refreshExams() {
-            const selectedSubject = subjectSelect.value;
-            const selectedTopic = topicSelect.value;
-            const currentExam = examSelect.value;
+        addOptionBtn.addEventListener("click", function () {
+            const index = optionsContainer.querySelectorAll(".option-row").length;
 
-            examSelect.innerHTML = '<option value="0">-- Избери тест --</option>';
+            const html = `
+                <div class="row g-2 align-items-center mb-2 option-row">
+                    <input type="hidden" name="Options[${index}].Id" value="0" />
 
-            allExamOptions.forEach(opt => {
-                if (!opt.value) return;
+                    <div class="col-md-8">
+                        <input name="Options[${index}].Text"
+                               class="form-control"
+                               placeholder="Текст на отговора" />
+                    </div>
 
-                const subjectOk = !selectedSubject || opt.subjectId === selectedSubject;
-                const topicOk = !selectedTopic || opt.topicId === selectedTopic;
+                    <div class="col-md-2">
+                        <div class="form-check mt-2">
+                            <input type="hidden" name="Options[${index}].IsCorrect" value="false" />
+                            <input type="checkbox"
+                                   name="Options[${index}].IsCorrect"
+                                   value="true"
+                                   class="form-check-input" />
+                            <label class="form-check-label">Верен</label>
+                        </div>
+                    </div>
 
-                if (subjectOk && topicOk) {
-                    const option = document.createElement("option");
-                    option.value = opt.value;
-                    option.text = opt.text;
-                    option.setAttribute("data-subject", opt.subjectId || "");
-                    option.setAttribute("data-topic", opt.topicId || "");
-                    if (opt.value === currentExam) option.selected = true;
-                    examSelect.appendChild(option);
-                }
-            });
-        }
+                    <div class="col-md-2 text-end">
+                        <button type="button" class="btn btn-outline-danger remove-option">Премахни</button>
+                    </div>
+                </div>
+            `;
 
-        subjectSelect.addEventListener("change", function () {
-            topicSelect.value = "";
-            examSelect.value = "0";
-            refreshTopics();
-            refreshExams();
+            optionsContainer.insertAdjacentHTML("beforeend", html);
         });
 
-        topicSelect.addEventListener("change", function () {
-            examSelect.value = "0";
-            refreshExams();
+        document.addEventListener("click", function (e) {
+            if (e.target.classList.contains("remove-option")) {
+                e.target.closest(".option-row").remove();
+                reindexOptions();
+            }
         });
-
-        refreshTopics();
-        refreshExams();
-    });
-</script>
+    </script>
 }

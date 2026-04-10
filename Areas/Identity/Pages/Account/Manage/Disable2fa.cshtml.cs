@@ -41,7 +41,7 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account.Manage
 
             if (!await _userManager.GetTwoFactorEnabledAsync(user))
             {
-                throw new InvalidOperationException($"Cannot disable 2FA for user as it's not currently enabled.");
+                throw new InvalidOperationException("Двуфакторната автентикация не може да бъде изключена, защото не е активирана.");
             }
 
             return Page();
@@ -58,11 +58,11 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account.Manage
             var disable2faResult = await _userManager.SetTwoFactorEnabledAsync(user, false);
             if (!disable2faResult.Succeeded)
             {
-                throw new InvalidOperationException($"Unexpected error occurred disabling 2FA.");
+                throw new InvalidOperationException("Възникна неочаквана грешка при изключването на двуфакторната автентикация.");
             }
 
             _logger.LogInformation("User with ID '{UserId}' has disabled 2fa.", _userManager.GetUserId(User));
-            StatusMessage = "2fa has been disabled. You can reenable 2fa when you setup an authenticator app";
+            StatusMessage = "Двуфакторната автентикация беше изключена. Можете да я активирате отново, когато настроите приложение за автентикация.";
             return RedirectToPage("./TwoFactorAuthentication");
         }
     }

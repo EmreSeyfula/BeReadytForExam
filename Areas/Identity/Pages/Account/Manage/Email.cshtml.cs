@@ -128,11 +128,11 @@ namespace BeReadyForExam.Areas.Identity.Pages.Account.Manage
                     "Потвърдете своя имейл адрес",
                     $"Моля, потвърдете своя акаунт, като <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>натиснете тук</a>.");
 
-                StatusMessage = "Confirmation link to change email sent. Please check your email.";
+                StatusMessage = "Изпратена е връзка за потвърждение на промяната на имейла. Моля, проверете пощата си.";
                 return RedirectToPage();
             }
 
-            StatusMessage = "Your email is unchanged.";
+            StatusMessage = "Имейл адресът Ви не е променен.";
             return RedirectToPage();
         }
 

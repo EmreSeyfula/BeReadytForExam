@@ -6,13 +6,15 @@ namespace BeReadyForExam.Models
     {
         public int Id { get; set; }
 
-        public string UserId { get; set; }
+        public string UserId { get; set; } = string.Empty;
 
         public int ExamId { get; set; }
        
         public DateTime StartedAt { get; set; }
 
         public DateTime? FinishedAt { get; set; }
+
+        public string QuestionSnapshot { get; set; } = string.Empty;
 
         public int TotalQuestions { get; set; }
 
@@ -22,8 +24,8 @@ namespace BeReadyForExam.Models
 
         public double Grade { get; set; }
 
-        public Exam Exam { get; set; }
+        public Exam Exam { get; set; } = null!;
 
-        public ICollection<AttemptAnswer>? AttemptAnswers { get; set; }
+        public ICollection<AttemptAnswer> AttemptAnswers { get; set; } = new List<AttemptAnswer>();
     }
 }

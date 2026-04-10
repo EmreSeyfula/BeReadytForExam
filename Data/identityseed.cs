@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 namespace BeReadyForExam.Data
 {
-    public static class identityseed
+    public static class IdentitySeed
     {
 
         public static async Task SeedAsync(IServiceProvider services) 
@@ -30,7 +30,7 @@ namespace BeReadyForExam.Data
                 if (!result.Succeeded)
                 {
                     var errors = string.Join("; ", result.Errors.Select(e => e.Description)); 
-                    throw new Exception($"Cannot create user {email}: {errors}"); 
+                    throw new Exception($"Неуспешно създаване на потребителя {email}: {errors}"); 
                 } 
             }
             if (!await userManager.IsInRoleAsync(user, role)) 

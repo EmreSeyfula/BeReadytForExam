@@ -32,14 +32,14 @@
            
                <div class="col-md-4">
                    <label asp-for="TopicId" class="form-label">Тема</label>
-                   <select asp-for="TopicId" asp-items="Model.Topics" class="form-select" id="topicSelect">
+                   <select asp-for="TopicId" asp-items="Model.Topics" class="form-select" id="topicSelect" data-selected-value="@Model.TopicId">
                        <option value="">-- Избери тема --</option>
                    </select>
                </div>
            
                <div class="col-md-4">
                    <label asp-for="ExamId" class="form-label">Тест</label>
-                   <select asp-for="ExamId" asp-items="Model.Exams" class="form-select" id="examSelect">
+                   <select asp-for="ExamId" asp-items="Model.Exams" class="form-select" id="examSelect" data-selected-value="@Model.ExamId">
                        <option value="0">-- Избери тест --</option>
                    </select>
                    <span asp-validation-for="ExamId" class="text-danger"></span>
@@ -109,6 +109,19 @@
         <partial name="_ValidationScriptsPartial" />
 
         <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                window.initSubjectTopicExamFilters?.({
+                    subjectSelector: "#subjectSelect",
+                    topicSelector: "#topicSelect",
+                    examSelector: "#examSelect",
+                    topicsUrl: "@Url.Action("BySubject", "Topics")",
+                    examsUrl: "@Url.Action("ByFilter", "Exam")",
+                    topicPlaceholder: "-- Избери тема --",
+                    examPlaceholder: "-- Избери тест --",
+                    examEmptyValue: "0"
+                });
+            });
+
             const optionsContainer = document.getElementById("optionsContainer");
             const addOptionBtn = document.getElementById("addOption");
 
