@@ -608,25 +608,23 @@ namespace BeReadyForExam.Services.Implementations
 
         public async Task<MyExamHistoryViewModel> GetMyHistoryAsync(string userId)
         {
-            var attempts = await _context.ExamAttempts
-                  .Include(a => a.Exam)
-                  .Where(a => a.UserId == userId)
-                  .OrderByDescending(a => a.StartedAt)
-                  .ToListAsync();
-
             return new MyExamHistoryViewModel
             {
-                Attempts = attempts.Select(a => new MyExamAttemptRowVM
-                {
-                    AttemptId = a.Id,
-                    TopicName = a.Exam.Title,
-                    StartedAt = a.StartedAt,
-                    FinishedAt = a.FinishedAt,
-                    TotalQuestions = a.TotalQuestions,
-                    CorrectCount = a.CorrectCount,
-                    ScorePercent = a.ScorePercent,
-                    Grade = a.Grade
-                }).ToList()
+                Attempts = await _context.ExamAttempts
+                    .Where(a => a.UserId == userId)
+                    .OrderByDescending(a => a.StartedAt)
+                    .Select(a => new MyExamAttemptRowVM
+                    {
+                        AttemptId = a.Id,
+                        TopicName = a.Exam.Title,
+                        StartedAt = a.StartedAt,
+                        FinishedAt = a.FinishedAt,
+                        TotalQuestions = a.TotalQuestions,
+                        CorrectCount = a.CorrectCount,
+                        ScorePercent = a.ScorePercent,
+                        Grade = a.Grade
+                    })
+                    .ToListAsync()
             };
         }
 
@@ -669,6 +667,10 @@ namespace BeReadyForExam.Services.Implementations
                     AttemptId = a.Id,
                     ExamTitle = a.Exam.Title,
                     UserId = a.UserId,
+                    UserDisplayName = _context.Users
+                        .Where(user => user.Id == a.UserId)
+                        .Select(user => user.Email ?? user.UserName ?? user.Id)
+                        .FirstOrDefault() ?? a.UserId,
                     TotalQuestions = a.TotalQuestions,
                     CorrectCount = a.CorrectCount,
                     ScorePercent = a.ScorePercent,

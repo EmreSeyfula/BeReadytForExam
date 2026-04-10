@@ -15,9 +15,18 @@ namespace BeReadyForExam.Controllers
         {
             _service = service;
         }
-        public async Task<IActionResult> Index()
+
+        public async Task<IActionResult> Index(int? subjectId)
         {
             var topics = await _service.GetAllAsync();
+
+            if (subjectId.HasValue)
+            {
+                topics = topics
+                    .Where(topic => topic.SubjectId == subjectId.Value)
+                    .ToList();
+            }
+
             return View(topics);
         }
 
@@ -43,16 +52,16 @@ namespace BeReadyForExam.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-            public async Task<IActionResult> Edit(int id)
-            {
-                var topic = await _service.GetByIdAsync(id);
-                if (topic == null) return NotFound();
+        public async Task<IActionResult> Edit(int id)
+        {
+            var topic = await _service.GetByIdAsync(id);
+            if (topic == null) return NotFound();
 
-                var subjects = await _service.GetAllSubjectsAsync();
-                ViewBag.Subjects = new SelectList(subjects, "Id", "Name", topic.SubjectId);
+            var subjects = await _service.GetAllSubjectsAsync();
+            ViewBag.Subjects = new SelectList(subjects, "Id", "Name", topic.SubjectId);
 
-                return View(topic);
-            }
+            return View(topic);
+        }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -69,13 +78,13 @@ namespace BeReadyForExam.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-            public async Task<IActionResult> Delete(int id)
-            {
-                var topic = await _service.GetByIdAsync(id);
-                if (topic == null) return NotFound();
+        public async Task<IActionResult> Delete(int id)
+        {
+            var topic = await _service.GetByIdAsync(id);
+            if (topic == null) return NotFound();
 
-                return View(topic);
-            }
+            return View(topic);
+        }
 
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
@@ -105,5 +114,3 @@ namespace BeReadyForExam.Controllers
         }
     }
 }
-
-

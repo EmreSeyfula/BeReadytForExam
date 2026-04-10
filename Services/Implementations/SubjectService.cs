@@ -16,12 +16,17 @@ namespace BeReadyForExam.Services.Implementations
 
         public async Task<List<Subject>> GetAllAsync()
         {
-            return await _context.Subjects.ToListAsync();
+            return await _context.Subjects
+                .Include(subject => subject.Topics)
+                .OrderBy(subject => subject.Name)
+                .ToListAsync();
         }
 
         public async Task<Subject?> GetByIdAsync(int id)
         {
-            return await _context.Subjects.FindAsync(id);
+            return await _context.Subjects
+                .Include(subject => subject.Topics)
+                .FirstOrDefaultAsync(subject => subject.Id == id);
         }
 
         public async Task CreateAsync(Subject subject)

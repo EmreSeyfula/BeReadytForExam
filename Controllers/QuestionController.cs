@@ -30,57 +30,9 @@ namespace BeReadyForExam.Controllers
 
 
         [Authorize(Roles = "Teacher,Admin")]
-        public async Task<IActionResult> Index(string? search, int? subjectId, int? topicId, int? examId, bool? isActive)
+        public IActionResult Index(string? search, int? subjectId, int? topicId, int? examId, bool? isActive)
         {
-            var questions = await _questionService.GetFilteredAsync(search, subjectId, topicId, examId, isActive);
-            var subjects = await _subjectService.GetAllAsync();
-            var topics = await _topicService.GetAllAsync();
-            var exams = await _examService.GetAllAsync();
-
-            var filteredTopics = subjectId.HasValue
-                ? topics.Where(t => t.SubjectId == subjectId.Value).ToList()
-                : topics;
-
-            var filteredExams = exams.AsEnumerable();
-
-            if (subjectId.HasValue)
-                filteredExams = filteredExams.Where(e => e.Topic != null && e.Topic.SubjectId == subjectId.Value);
-
-            if (topicId.HasValue)
-                filteredExams = filteredExams.Where(e => e.TopicId == topicId.Value);
-
-            var vm = new QuestionIndexViewModel
-            {
-                Questions = questions,
-                Search = search,
-                SubjectId = subjectId,
-                TopicId = topicId,
-                ExamId = examId,
-                IsActive = isActive,
-
-                Subjects = subjects.Select(s => new SelectListItem
-                {
-                    Value = s.Id.ToString(),
-                    Text = s.Name,
-                    Selected = subjectId.HasValue && s.Id == subjectId.Value
-                }).ToList(),
-
-                Topics = filteredTopics.Select(t => new SelectListItem
-                {
-                    Value = t.Id.ToString(),
-                    Text = t.Name,
-                    Selected = topicId.HasValue && t.Id == topicId.Value
-                }).ToList(),
-
-                Exams = filteredExams.Select(e => new SelectListItem
-                {
-                    Value = e.Id.ToString(),
-                    Text = e.Title,
-                    Selected = examId.HasValue && e.Id == examId.Value
-                }).ToList()
-            };
-
-            return View(vm);
+            return RedirectToAction("Index", "Exam");
         }
 
         [Authorize(Roles = "Teacher,Admin")]
