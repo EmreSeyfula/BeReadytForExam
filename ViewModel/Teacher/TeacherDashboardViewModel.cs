@@ -17,6 +17,7 @@
         public int AttemptId { get; set; }
         public string ExamTitle { get; set; } = string.Empty;
         public string UserId { get; set; } = string.Empty;
+        public string UserDisplayName { get; set; } = string.Empty;
         public int TotalQuestions { get; set; }
         public int CorrectCount { get; set; }
         public double ScorePercent { get; set; }
