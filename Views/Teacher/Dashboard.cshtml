@@ -11,22 +11,24 @@
                 <span class="dashboard-tag">Администрация</span>
                 <h1 class="dashboard-title">Учителско табло</h1>
                 <p class="dashboard-subtitle">
-                    Управлявай тестове, въпроси, теми и следи последните ученически опити от едно място.
+                    Управлявай тестове, теми и съдържанието в тях, и следи последните ученически опити от едно място.
                 </p>
             </div>
 
-            <div class="dashboard-hero-actions">
-                <a asp-controller="Exam" asp-action="Index" class="btn btn-primary">
-                    Управление на тестове
-                </a>
-                <a asp-controller="Question" asp-action="Index" class="btn btn-dashboard-soft">
-                    Въпроси
-                </a>
-            </div>
         </div>
     </div>
 
     <div class="dashboard-quick-links mb-4">
+          <a asp-controller="Exam" asp-action="Create" class="dashboard-link-card">
+            <div class="dashboard-link-icon">
+                <i class="fas fa-pen-to-square"></i>
+            </div>
+            <div>
+                <div class="dashboard-link-title">Нов тест</div>
+                <div class="dashboard-link-text">Създаване с въпроси в редактора</div>
+            </div>
+        </a>
+
         <a asp-controller="Exam" asp-action="Index" class="dashboard-link-card">
             <div class="dashboard-link-icon">
                 <i class="fas fa-file-alt"></i>
@@ -37,15 +39,7 @@
             </div>
         </a>
 
-        <a asp-controller="Question" asp-action="Index" class="dashboard-link-card">
-            <div class="dashboard-link-icon">
-                <i class="fas fa-question-circle"></i>
-            </div>
-            <div>
-                <div class="dashboard-link-title">Въпроси</div>
-                <div class="dashboard-link-text">Редакция и създаване</div>
-            </div>
-        </a>
+      
 
         <a asp-controller="Topics" asp-action="Index" class="dashboard-link-card">
             <div class="dashboard-link-icon">
@@ -93,7 +87,7 @@
             <div class="dashboard-stat-card">
                 <div class="dashboard-stat-top">
                     <span class="dashboard-stat-icon"><i class="fas fa-question"></i></span>
-                    <span class="dashboard-stat-label">Въпроси</span>
+                    <span class="dashboard-stat-label">Въпроси в тестовете</span>
                 </div>
                 <div class="dashboard-stat-number">@Model.TotalQuestions</div>
             </div>
@@ -164,7 +158,7 @@
                                     <td>
                                         <div class="fw-semibold">@item.ExamTitle</div>
                                     </td>
-                                    <td>@item.UserId</td>
+                                    <td>@item.UserDisplayName</td>
                                     <td>
                                         <span class="@badgeClass">
                                         @item.CorrectCount / @item.TotalQuestions (@item.ScorePercent.ToString("F1")%)

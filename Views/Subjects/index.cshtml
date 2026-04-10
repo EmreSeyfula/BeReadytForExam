@@ -1,57 +1,57 @@
 ﻿@model IEnumerable<Subject>
-<div class="d-flex justify-content-between align-items-center mb-4">
-    <div class="d-flex gap-2 align-items-center">
+
+<div class="management-page subject-management-page fade-in-up">
+    <div class="d-flex gap-2 align-items-center mb-3">
         @{
             ViewData["BackController"] = "Teacher";
             ViewData["BackAction"] = "Dashboard";
             ViewData["BackText"] = "Назад към таблото";
         }
         <partial name="_BackButton" />
-        <h1 class="fade-in-up mb-0">
-            <i class="fas fa-book me-2" style="color: var(--primary-teal);"></i>
-            Учебни предмети
-        </h1>
     </div>
 
-        @if (User.IsInRole("Admin"))
-        {
-                <a asp-action="Create" class="btn btn-primary">
-                    <i class="fas fa-plus me-2"></i>Добави предмет
-                </a>
-        }
+    <div class="management-hero mb-4">
+        <div class="management-hero-content">
+            <div>
+                <span class="management-tag">Структура</span>
+                <h1 class="management-title">Учебни предмети</h1>
+                <p class="management-subtitle">
+                    Организирай предметите по по-приятен и ясен начин, така че темите и тестовете да следват една логична структура.
+                </p>
+            </div>
+
+            @if (User.IsInRole("Admin"))
+            {
+                <a asp-action="Create" class="btn btn-primary management-hero-btn">Добави предмет</a>
+            }
+        </div>
     </div>
 
-    <div class="row g-4">
+    <div class="row g-3">
         @foreach (var subject in Model)
         {
-                <div class="col-md-6 col-lg-4 fade-in-up">
-                    <div class="card h-100">
-                        <div class="card-body">
-                            <div class="text-center mb-3">
-                                <div class="rounded-circle d-inline-flex align-items-center justify-content-center" 
-                                     style="width: 80px; height: 80px; background: linear-gradient(135deg, var(--primary-teal), var(--primary-blue));">
-                                    <i class="fas fa-graduation-cap fa-2x" style="color: white;"></i>
-                                </div>
-                            </div>
-                            <h4 class="card-title text-center mb-3">@subject.Name</h4>
-                              <p class="card-text text-center text-muted">
-                            @(string.IsNullOrWhiteSpace(subject.Description)
-                                    ? "Няма описание"
-                                    : subject.Description.Substring(0, Math.Min(100, subject.Description.Length)) + "...")
-                            </p>
-                            <div class="text-center mt-3">
-                                <span class="badge bg-primary">
-                                    <i class="fas fa-tag me-1"></i>@subject.Topics?.Count теми
-                                </span>
-                            </div>
+            <div class="col-sm-6 col-lg-4 col-xl-3 fade-in-up">
+                <div class="card management-subject-card h-100">
+                    <div class="card-body">
+                        <div class="management-subject-icon">
+                            <i class="fas fa-graduation-cap"></i>
                         </div>
-                        <div class="card-footer bg-transparent border-0 text-center pb-4">
-                            <a asp-action="Edit" asp-route-id="@subject.Id" class="btn btn-outline-primary">
-                                <i class="fas fa-eye me-2"></i>Разгледай
-                            </a>
+
+                        <div class="management-subject-meta">
+                            <span class="management-mini-badge">Предмет</span>
+                            <span class="management-topic-count">@((subject.Topics?.Count) ?? 0) теми</span>
+                        </div>
+
+                        <h4 class="card-title text-center mb-3">@subject.Name</h4>
+
+                        <div class="management-actions justify-content-center">
+                            <a asp-controller="Topics" asp-action="Index" asp-route-subjectId="@subject.Id" class="btn btn-outline-primary"><i class="fas fa-eye me-2"></i>Разгледай</a>
                         </div>
                     </div>
                 </div>
+            </div>
         }
     </div>
 </div>
+
+

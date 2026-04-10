@@ -1,67 +1,75 @@
-п»ї@model IEnumerable<BeReadyForExam.ViewModel.Exam.TeacherExamRowViewModel>
+@model IEnumerable<BeReadyForExam.ViewModel.Exam.TeacherExamRowViewModel>
 
-<div class="d-flex justify-content-between align-items-center mb-3">
-    <div class="d-flex gap-2 align-items-center">
+<div class="management-page exam-management-page fade-in-up">
+    <div class="d-flex gap-2 align-items-center mb-3">
         @{
             ViewData["BackController"] = "Teacher";
             ViewData["BackAction"] = "Dashboard";
-            ViewData["BackText"] = "РќР°Р·Р°Рґ РєСЉРј С‚Р°Р±Р»РѕС‚Рѕ";
+            ViewData["BackText"] = "Назад към таблото";
         }
         <partial name="_BackButton" />
-        <h2 class="mb-0">РўРµСЃС‚РѕРІРµ (СѓС‡РёС‚РµР»)</h2>
     </div>
 
-        <a asp-action="Create" class="btn btn-success">РЎСЉР·РґР°Р№ С‚РµСЃС‚</a>
+    <div class="management-hero mb-4">
+        <div class="management-hero-content">
+            <div>
+                <span class="management-tag">Управление</span>
+                <h1 class="management-title">Тестове</h1>
+                <p class="management-subtitle">
+                    Поддържай тестовете на едно място, отваряй редактора по-бързо и следи дали всеки тест има достатъчно въпроси.
+                </p>
+            </div>
+
+            <a asp-action="Create" class="btn btn-primary management-hero-btn">Създай тест</a>
+        </div>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card management-table-card shadow-sm">
+        <div class="card-header management-table-header">
+            <div>
+                <h4 class="mb-1">Списък с тестове</h4>
+                <div class="management-table-subtitle">Всички тестове и тяхната готовност за работа.</div>
+            </div>
+        </div>
+
         <div class="card-body table-responsive">
-            <table class="table table-hover align-middle">
-                <thead class="table-dark">
+            <table class="table management-table align-middle">
+                <thead>
                     <tr>
-                        <th>Р—Р°РіР»Р°РІРёРµ</th>
-                        <th>РўРµРјР°</th>
-                        <th>РђРєС‚РёРІРµРЅ</th>
-                        <th>Р—Р°РґР°РґРµРЅРё</th>
-                        <th>Р’СЉРїСЂРѕСЃРё РІ Р±Р°Р·Р°С‚Р°</th>
-                        <th style="width:320px;"></th>
+                        <th>Заглавие</th>
+                        <th>Тема</th>
+                        <th>Статус</th>
+                        <th>Зададени</th>
+                        <th>Въпроси в теста</th>
+                        <th style="width: 270px;">Действия</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var e in Model)
                     {
-                            <tr>
-                                <td class="fw-semibold">@e.Title</td>
-                                <td>@e.TopicName</td>
-                                <td>
-                                @if (e.IsActive)
-                                {
-                                            <span class="badge bg-success">РђРєС‚РёРІРµРЅ</span>
-                                }
-                                else
-                                {
-                                            <span class="badge bg-secondary">РќРµР°РєС‚РёРІРµРЅ</span>
-                                }
-                                </td>
-                                <td>@e.ConfiguredQuestionsCount</td>
-                                <td>
-                                @e.ActualQuestionsInBank
+                        <tr>
+                            <td class="fw-semibold">@e.Title</td>
+                            <td>@e.TopicName</td>
+                            <td>
+                                <span class="status-pill @(e.IsActive ? "status-active" : "status-inactive")">
+                                    @(e.IsActive ? "Активен" : "Неактивен")
+                                </span>
+                            </td>
+                            <td>@e.ConfiguredQuestionsCount</td>
+                            <td>
+                                <span class="fw-semibold">@e.ActualQuestionsInBank</span>
                                 @if (e.ActualQuestionsInBank < e.ConfiguredQuestionsCount)
                                 {
-                                            <span class="text-danger small ms-2">(РЅРµРґРѕСЃС‚Р°С‚СЉС‡РЅРё)</span>
+                                    <span class="text-danger small d-block mt-1">Недостатъчни въпроси</span>
                                 }
-                                </td>
-                                <td class="text-end">
-                                    <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-sm btn-warning">РћС‚РІРѕСЂРё СЂРµРґР°РєС‚РѕСЂР°</a>
-                                    <a asp-controller="Question"
-                                       asp-action="Index"
-                                       asp-route-examId="@e.Id"
-                                       class="btn btn-sm btn-outline-primary">
-                                        РћС‚РґРµР»РЅРѕ СѓРїСЂР°РІР»РµРЅРёРµ РЅР° РІСЉРїСЂРѕСЃРёС‚Рµ
-                                    </a>
-                                    <a asp-action="Delete" asp-route-id="@e.Id" class="btn btn-sm btn-danger">РР·С‚СЂРёР№</a>
-                                </td>
-                            </tr>
+                            </td>
+                            <td>
+                                <div class="management-actions">
+                                    <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-warning">Отвори редактора</a>
+                                    <a asp-action="Delete" asp-route-id="@e.Id" class="btn btn-danger">Изтрий</a>
+                                </div>
+                            </td>
+                        </tr>
                     }
                 </tbody>
             </table>

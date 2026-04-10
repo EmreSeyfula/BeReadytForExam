@@ -896,3 +896,295 @@ body {
 .card.rounded-4 {
     border-radius: 1.25rem !important;
 }
+
+/* =========================
+   MANAGEMENT PAGES
+========================= */
+
+.management-page {
+    padding-bottom: 2rem;
+}
+
+.management-hero {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-blue) 68%, var(--primary-teal) 100%);
+    border-radius: 28px;
+    padding: 2.1rem;
+    color: var(--text-light);
+    box-shadow: var(--shadow-lg);
+    position: relative;
+    overflow: hidden;
+}
+
+    .management-hero::before {
+        content: '';
+        position: absolute;
+        top: -50px;
+        right: -50px;
+        width: 220px;
+        height: 220px;
+        background: rgba(255,255,255,0.08);
+        border-radius: 50%;
+    }
+
+    .management-hero::after {
+        content: '';
+        position: absolute;
+        bottom: -70px;
+        left: -70px;
+        width: 170px;
+        height: 170px;
+        background: rgba(255,255,255,0.06);
+        border-radius: 50%;
+    }
+
+.management-hero-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.management-tag {
+    display: inline-block;
+    padding: 0.42rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.18);
+    color: #fff;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.management-title {
+    margin: 0 0 0.6rem 0;
+    font-size: 2.15rem;
+    font-weight: 800;
+    color: #fff;
+}
+
+.management-subtitle {
+    margin: 0;
+    max-width: 720px;
+    line-height: 1.65;
+    opacity: 0.94;
+}
+
+.management-hero-btn {
+    min-width: 180px;
+    justify-content: center;
+}
+
+.management-table-card {
+    border-radius: 24px;
+    overflow: hidden;
+}
+
+.management-table-header {
+    background: linear-gradient(135deg, rgba(7,42,64,0.97) 0%, rgba(23,140,164,0.96) 100%);
+    color: white;
+    padding: 1.2rem 1.4rem;
+}
+
+.management-table-subtitle {
+    color: rgba(255,255,255,0.82);
+    font-size: 0.95rem;
+}
+
+.management-table {
+    box-shadow: none;
+    border-radius: 0;
+}
+
+    .management-table thead th {
+        background: rgba(7, 42, 64, 0.04);
+        color: var(--primary-dark);
+        font-weight: 700;
+        border: none;
+        padding: 1rem;
+    }
+
+    .management-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-top: 1px solid rgba(7, 42, 64, 0.06);
+    }
+
+    .management-table tbody tr:hover {
+        background: rgba(24, 183, 190, 0.08);
+        transform: none;
+    }
+
+.management-actions {
+    display: flex;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.management-actions .btn,
+.management-hero-btn {
+    min-height: 44px;
+    border-radius: 999px;
+    padding: 0.72rem 1.3rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+}
+
+.management-actions .btn {
+    min-width: 135px;
+    justify-content: center;
+}
+
+.management-actions .btn-warning {
+    background: linear-gradient(135deg, rgba(23, 140, 164, 0.14) 0%, rgba(24, 183, 190, 0.22) 100%);
+    border: 1px solid rgba(23, 140, 164, 0.22);
+    color: var(--primary-dark);
+    box-shadow: none;
+}
+
+    .management-actions .btn-warning:hover {
+        background: linear-gradient(135deg, rgba(23, 140, 164, 0.22) 0%, rgba(24, 183, 190, 0.3) 100%);
+        border-color: rgba(23, 140, 164, 0.32);
+        color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+.management-actions .btn-danger {
+    background: linear-gradient(135deg, rgba(7, 42, 64, 0.9) 0%, rgba(23, 140, 164, 0.9) 100%);
+    border: 1px solid rgba(7, 42, 64, 0.12);
+    color: #fff;
+    box-shadow: none;
+}
+
+    .management-actions .btn-danger:hover {
+        background: linear-gradient(135deg, rgba(7, 42, 64, 1) 0%, rgba(23, 140, 164, 1) 100%);
+        border-color: transparent;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow-md);
+    }
+
+.management-empty-state {
+    color: #738392;
+    font-size: 1rem;
+}
+
+.exam-management-page .management-actions .btn {
+    min-width: 150px;
+}
+
+.management-subject-card {
+    border-radius: 26px;
+    overflow: hidden;
+    background: rgba(255,255,255,0.94);
+}
+
+.management-subject-card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    min-height: 100%;
+}
+
+.management-subject-icon {
+    width: 86px;
+    height: 86px;
+    border-radius: 24px;
+    margin: 0 auto 1.25rem auto;
+    background: linear-gradient(135deg, var(--primary-teal) 0%, var(--primary-blue) 100%);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    box-shadow: var(--shadow-md);
+}
+
+.management-subject-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    margin-bottom: 1rem;
+}
+
+.management-mini-badge,
+.management-topic-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+
+.management-mini-badge {
+    background: rgba(23, 140, 164, 0.1);
+    color: var(--primary-blue);
+}
+
+.management-topic-count {
+    background: rgba(24, 183, 190, 0.14);
+    color: var(--primary-dark);
+}
+
+.subject-management-page .management-actions {
+    margin-top: auto;
+}
+
+.subject-management-page .management-actions .btn {
+    min-width: 160px;
+}
+
+@media (max-width: 768px) {
+    .management-hero {
+        padding: 1.5rem;
+        border-radius: 22px;
+    }
+
+    .management-title {
+        font-size: 1.7rem;
+    }
+
+    .management-actions {
+        width: 100%;
+    }
+
+    .management-actions .btn,
+    .management-hero-btn {
+        width: 100%;
+    }
+
+    .management-table-header {
+        padding: 1rem 1.1rem;
+    }
+}
+
+.subject-management-page .management-subject-card {
+    border-radius: 22px;
+}
+
+.subject-management-page .management-subject-card .card-body {
+    padding: 1.5rem;
+}
+
+.subject-management-page .management-subject-icon {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    margin: 0 auto 1rem auto;
+    font-size: 1.7rem;
+}
+
+.subject-management-page .card-title {
+    font-size: 1.15rem;
+    margin-bottom: 1.2rem !important;
+}
