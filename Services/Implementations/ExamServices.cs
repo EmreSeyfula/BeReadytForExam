@@ -85,6 +85,66 @@ namespace BeReadyForExam.Services.Implementations
                 : questions;
         }
 
+        private static void NormalizeEditorModel(ExamEditorViewModel model)
+        {
+            model.Title = model.Title?.Trim() ?? string.Empty;
+            model.Description = string.IsNullOrWhiteSpace(model.Description)
+                ? null
+                : model.Description.Trim();
+            model.Questions ??= new List<ExamQuestionEditorViewModel>();
+
+            foreach (var question in model.Questions)
+            {
+                question.Text = question.Text?.Trim() ?? string.Empty;
+                question.Options = (question.Options ?? new List<ExamOptionEditorViewModel>())
+                    .Where(option => !string.IsNullOrWhiteSpace(option.Text))
+                    .Select(option => new ExamOptionEditorViewModel
+                    {
+                        Id = option.Id,
+                        Text = option.Text.Trim(),
+                        IsCorrect = option.IsCorrect
+                    })
+                    .ToList();
+            }
+        }
+
+        private static void ValidateEditorModelOrThrow(ExamEditorViewModel model)
+        {
+            if (string.IsNullOrWhiteSpace(model.Title))
+                throw new InvalidOperationException("Полето „Заглавие“ е задължително.");
+
+            if (model.TopicId <= 0)
+                throw new InvalidOperationException("Моля, изберете тема.");
+
+            if (model.Questions == null || model.Questions.Count == 0)
+                throw new InvalidOperationException("Добавете поне един въпрос към теста.");
+
+            foreach (var question in model.Questions)
+            {
+                if (string.IsNullOrWhiteSpace(question.Text))
+                    throw new InvalidOperationException("Всеки въпрос трябва да има текст.");
+
+                if (question.Options.Count < 2)
+                    throw new InvalidOperationException($"Въпросът „{question.Text}“ трябва да има поне 2 отговора.");
+
+                if (!question.Options.Any(option => option.IsCorrect))
+                    throw new InvalidOperationException($"Въпросът „{question.Text}“ трябва да има поне един верен отговор.");
+            }
+        }
+
+        private static ExamQuestionEditorViewModel CreateDefaultQuestion()
+        {
+            return new ExamQuestionEditorViewModel
+            {
+                IsActive = true,
+                Options = new List<ExamOptionEditorViewModel>
+                {
+                    new(),
+                    new()
+                }
+            };
+        }
+
         public async Task<List<Exam>> GetAllAsync()
         {
             return await _context.Exams
@@ -110,8 +170,93 @@ namespace BeReadyForExam.Services.Implementations
                 .FirstOrDefaultAsync(e => e.Id == id);
         }
 
+        public async Task<ExamEditorViewModel?> GetEditorByIdAsync(int id)
+        {
+            var exam = await _context.Exams
+                .Include(e => e.Topic)
+                .ThenInclude(t => t!.Subject)
+                .Include(e => e.Questions)
+                .ThenInclude(q => q.Options)
+                .FirstOrDefaultAsync(e => e.Id == id);
+
+            if (exam == null)
+            {
+                return null;
+            }
+
+            var model = new ExamEditorViewModel
+            {
+                Id = exam.Id,
+                Title = exam.Title,
+                Description = exam.Description,
+                SubjectId = exam.Topic?.SubjectId,
+                TopicId = exam.TopicId,
+                QuestionsCount = exam.QuestionsCount,
+                TimeLimitMinutes = exam.TimeLimitMinutes,
+                RandomizeQuestions = exam.RandomizeQuestions,
+                IsActive = exam.IsActive,
+                Questions = exam.Questions
+                    .OrderBy(q => q.Id)
+                    .Select(q => new ExamQuestionEditorViewModel
+                    {
+                        Id = q.Id,
+                        Text = q.Text,
+                        IsActive = q.IsActive,
+                        Options = q.Options
+                            .OrderBy(o => o.Id)
+                            .Select(o => new ExamOptionEditorViewModel
+                            {
+                                Id = o.Id,
+                                Text = o.Text,
+                                IsCorrect = o.IsCorrect
+                            })
+                            .ToList()
+                    })
+                    .ToList()
+            };
+
+            if (model.Questions.Count == 0)
+            {
+                model.Questions.Add(CreateDefaultQuestion());
+            }
+
+            return model;
+        }
+
         public async Task<int> CreateAsync(Exam exam)
         {
+            _context.Exams.Add(exam);
+            await _context.SaveChangesAsync();
+            return exam.Id;
+        }
+
+        public async Task<int> CreateWithQuestionsAsync(ExamEditorViewModel model)
+        {
+            NormalizeEditorModel(model);
+            ValidateEditorModelOrThrow(model);
+
+            var exam = new Exam
+            {
+                Title = model.Title,
+                Description = model.Description,
+                TopicId = model.TopicId,
+                QuestionsCount = model.QuestionsCount,
+                TimeLimitMinutes = model.TimeLimitMinutes,
+                RandomizeQuestions = model.RandomizeQuestions,
+                IsActive = model.IsActive,
+                CreatedAt = DateTime.UtcNow,
+                Questions = model.Questions.Select(question => new Question
+                {
+                    Text = question.Text,
+                    IsActive = question.IsActive,
+                    Options = question.Options.Select(option => new Option
+                    {
+                        Text = option.Text,
+                        IsCorrect = option.IsCorrect
+                    }).ToList()
+                }).ToList()
+            };
+
             _context.Exams.Add(exam);
             await _context.SaveChangesAsync();
             return exam.Id;
@@ -325,6 +470,121 @@ namespace BeReadyForExam.Services.Implementations
             attempt.ScorePercent = attempt.TotalQuestions == 0 ? 0 : (double)correct / attempt.TotalQuestions * 100;
             attempt.Grade = 2 + (attempt.ScorePercent / 100.0) * 4;
             attempt.FinishedAt ??= DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateWithQuestionsAsync(ExamEditorViewModel model)
+        {
+            NormalizeEditorModel(model);
+            ValidateEditorModelOrThrow(model);
+
+            var exam = await _context.Exams
+                .Include(e => e.Questions)
+                .ThenInclude(q => q.Options)
+                .FirstOrDefaultAsync(e => e.Id == model.Id);
+
+            if (exam == null)
+                throw new InvalidOperationException("Тестът не е намерен.");
+
+            exam.Title = model.Title;
+            exam.Description = model.Description;
+            exam.TopicId = model.TopicId;
+            exam.QuestionsCount = model.QuestionsCount;
+            exam.TimeLimitMinutes = model.TimeLimitMinutes;
+            exam.RandomizeQuestions = model.RandomizeQuestions;
+            exam.IsActive = model.IsActive;
+
+            var questionMap = exam.Questions.ToDictionary(q => q.Id);
+
+            foreach (var questionModel in model.Questions)
+            {
+                if (questionModel.Id > 0)
+                {
+                    if (!questionMap.TryGetValue(questionModel.Id, out var existingQuestion))
+                        throw new InvalidOperationException("Невалиден въпрос в редактора.");
+
+                    existingQuestion.Text = questionModel.Text;
+                    existingQuestion.IsActive = questionModel.IsActive;
+
+                    var optionMap = existingQuestion.Options.ToDictionary(o => o.Id);
+
+                    foreach (var optionModel in questionModel.Options)
+                    {
+                        if (optionModel.Id > 0)
+                        {
+                            if (!optionMap.TryGetValue(optionModel.Id, out var existingOption))
+                                throw new InvalidOperationException("Невалиден отговор във въпроса.");
+
+                            existingOption.Text = optionModel.Text;
+                            existingOption.IsCorrect = optionModel.IsCorrect;
+                        }
+                        else
+                        {
+                            existingQuestion.Options.Add(new Option
+                            {
+                                Text = optionModel.Text,
+                                IsCorrect = optionModel.IsCorrect
+                            });
+                        }
+                    }
+
+                    var keptOptionIds = questionModel.Options
+                        .Where(o => o.Id > 0)
+                        .Select(o => o.Id)
+                        .ToHashSet();
+
+                    var optionsToRemove = existingQuestion.Options
+                        .Where(o => o.Id > 0 && !keptOptionIds.Contains(o.Id))
+                        .ToList();
+
+                    if (optionsToRemove.Count > 0)
+                    {
+                        var optionIdsToRemove = optionsToRemove.Select(o => o.Id).ToList();
+                        var usedOptionExists = await _context.AttemptAnswers
+                            .AnyAsync(answer => optionIdsToRemove.Contains(answer.SelectedOptionId));
+
+                        if (usedOptionExists)
+                            throw new InvalidOperationException("Не можеш да изтриеш отговор, който вече е използван в решен тест.");
+
+                        _context.Options.RemoveRange(optionsToRemove);
+                    }
+                }
+                else
+                {
+                    exam.Questions.Add(new Question
+                    {
+                        Text = questionModel.Text,
+                        IsActive = questionModel.IsActive,
+                        Options = questionModel.Options.Select(option => new Option
+                        {
+                            Text = option.Text,
+                            IsCorrect = option.IsCorrect
+                        }).ToList()
+                    });
+                }
+            }
+
+            var keptQuestionIds = model.Questions
+                .Where(q => q.Id > 0)
+                .Select(q => q.Id)
+                .ToHashSet();
+
+            var questionsToRemove = exam.Questions
+                .Where(q => q.Id > 0 && !keptQuestionIds.Contains(q.Id))
+                .ToList();
+
+            if (questionsToRemove.Count > 0)
+            {
+                var questionIdsToRemove = questionsToRemove.Select(q => q.Id).ToList();
+                var usedQuestionExists = await _context.AttemptAnswers
+                    .AnyAsync(answer => questionIdsToRemove.Contains(answer.QuestionId));
+
+                if (usedQuestionExists)
+                    throw new InvalidOperationException("Не можеш да изтриеш въпрос, който вече е използван в решен тест.");
+
+                _context.Questions.RemoveRange(questionsToRemove);
+            }
 
             await _context.SaveChangesAsync();
         }

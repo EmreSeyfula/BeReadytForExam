@@ -7,8 +7,11 @@ namespace BeReadyForExam.Services.Interfaces
     {
         Task<List<Exam>> GetAllAsync();
         Task<Exam?> GetByIdAsync(int id);
+        Task<ExamEditorViewModel?> GetEditorByIdAsync(int id);
         Task<int> CreateAsync(Exam exam);
+        Task<int> CreateWithQuestionsAsync(ExamEditorViewModel model);
         Task UpdateAsync(Exam exam);
+        Task UpdateWithQuestionsAsync(ExamEditorViewModel model);
         Task DeleteAsync(int id);
         Task<int> StartExamAsync(int examId, string userId);
         Task<TakeExamViewModel> GetExamAsync(int attemptId, string userId, bool canAccessAllAttempts = false);

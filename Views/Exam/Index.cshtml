@@ -52,21 +52,13 @@
                                 }
                                 </td>
                                 <td class="text-end">
+                                    <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-sm btn-warning">Отвори редактора</a>
                                     <a asp-controller="Question"
                                        asp-action="Index"
                                        asp-route-examId="@e.Id"
                                        class="btn btn-sm btn-outline-primary">
-                                        Управление на въпросите
+                                        Отделно управление на въпросите
                                     </a>
-
-                                    <a asp-controller="Question"
-                                       asp-action="Create"
-                                       asp-route-examId="@e.Id"
-                                       class="btn btn-sm btn-outline-success">
-                                        Добави въпрос
-                                    </a>
-
-                                    <a asp-action="Edit" asp-route-id="@e.Id" class="btn btn-sm btn-warning">Редактирай</a>
                                     <a asp-action="Delete" asp-route-id="@e.Id" class="btn btn-sm btn-danger">Изтрий</a>
                                 </td>
                             </tr>

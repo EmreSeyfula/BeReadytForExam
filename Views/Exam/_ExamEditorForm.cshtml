@@ -1,0 +1,338 @@
+﻿@model BeReadyForExam.ViewModel.Exam.ExamEditorViewModel
+
+@{
+    var actionName = Model.Id == 0 ? "Create" : "Edit";
+}
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+
+        <form asp-action="@actionName" method="post" id="exam-editor-form">
+            @Html.AntiForgeryToken()
+            <input type="hidden" asp-for="Id" />
+
+            <div class="border rounded-3 p-3 mb-4 bg-light-subtle">
+                <h4 class="mb-3">Данни за теста</h4>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label asp-for="Title" class="form-label">Заглавие</label>
+                        <input asp-for="Title" class="form-control" placeholder="Пример: Финален тест по математика" />
+                        <span asp-validation-for="Title" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="QuestionsCount" class="form-label">Колко въпроса да се задават</label>
+                        <input asp-for="QuestionsCount" class="form-control" />
+                        <span asp-validation-for="QuestionsCount" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="SubjectId" class="form-label">Предмет</label>
+                        <select asp-for="SubjectId" asp-items="Model.Subjects" class="form-select" id="subjectSelect">
+                            <option value="">-- Избери предмет --</option>
+                        </select>
+                        <span asp-validation-for="SubjectId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="TopicId" class="form-label">Тема</label>
+                        <select asp-for="TopicId" asp-items="Model.Topics" class="form-select" id="topicSelect" data-selected-value="@Model.TopicId">
+                            <option value="0">-- Избери тема --</option>
+                        </select>
+                        <span asp-validation-for="TopicId" class="text-danger"></span>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="TimeLimitMinutes" class="form-label">Ограничение за време (минути)</label>
+                        <input asp-for="TimeLimitMinutes" class="form-control" />
+                        <span asp-validation-for="TimeLimitMinutes" class="text-danger"></span>
+                        <div class="form-text">Остави празно, ако няма ограничение.</div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label asp-for="Description" class="form-label">Описание</label>
+                        <textarea asp-for="Description" class="form-control" rows="3" placeholder="Кратко описание за учениците..."></textarea>
+                        <span asp-validation-for="Description" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="d-flex gap-4 flex-wrap mt-3">
+                    <div class="form-check form-switch">
+                        <input asp-for="RandomizeQuestions" class="form-check-input" />
+                        <label asp-for="RandomizeQuestions" class="form-check-label">Разбъркай въпросите</label>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input asp-for="IsActive" class="form-check-input" />
+                        <label asp-for="IsActive" class="form-check-label">Активен тест</label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h4 class="mb-0">Въпроси</h4>
+                    <div class="text-muted small">Добавяй, редактирай и подреждай отговорите директно тук.</div>
+                </div>
+
+                <button type="button" class="btn btn-outline-primary" id="addQuestionButton">
+                    Добави въпрос
+                </button>
+            </div>
+
+            <div id="questionsContainer">
+                @for (int questionIndex = 0; questionIndex < Model.Questions.Count; questionIndex++)
+                {
+                    <div class="card mb-3 question-card">
+                        <div class="card-body">
+                            <input type="hidden" name="Questions[@questionIndex].Id" value="@Model.Questions[questionIndex].Id" data-field="question-id" />
+
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="mb-0" data-role="question-title">Въпрос @(questionIndex + 1)</h5>
+                                <button type="button" class="btn btn-outline-danger btn-sm" data-action="remove-question">
+                                    Премахни въпроса
+                                </button>
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Текст на въпроса</label>
+                                <textarea name="Questions[@questionIndex].Text" class="form-control" rows="3" data-field="question-text">@Model.Questions[questionIndex].Text</textarea>
+                            </div>
+
+                            <div class="form-check form-switch mb-3">
+                                <input type="hidden" name="Questions[@questionIndex].IsActive" value="false" data-field="question-active-hidden" />
+                                <input type="checkbox"
+                                       name="Questions[@questionIndex].IsActive"
+                                       value="true"
+                                       class="form-check-input"
+                                       data-field="question-active"
+                                       @(Model.Questions[questionIndex].IsActive ? "checked" : "") />
+                                <label class="form-check-label">Активен въпрос</label>
+                            </div>
+
+                            <div class="border rounded-3 p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-3">
+                                    <h6 class="mb-0">Отговори</h6>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm" data-action="add-option">
+                                        Добави отговор
+                                    </button>
+                                </div>
+
+                                <div class="options-container">
+                                    @for (int optionIndex = 0; optionIndex < Model.Questions[questionIndex].Options.Count; optionIndex++)
+                                    {
+                                        <div class="row g-2 align-items-center mb-2 option-row">
+                                            <input type="hidden" name="Questions[@questionIndex].Options[@optionIndex].Id" value="@Model.Questions[questionIndex].Options[optionIndex].Id" data-field="option-id" />
+
+                                            <div class="col-md-8">
+                                                <input name="Questions[@questionIndex].Options[@optionIndex].Text"
+                                                       value="@Model.Questions[questionIndex].Options[optionIndex].Text"
+                                                       class="form-control"
+                                                       placeholder="Текст на отговора"
+                                                       data-field="option-text" />
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-check">
+                                                    <input type="checkbox"
+                                                           name="Questions[@questionIndex].Options[@optionIndex].IsCorrect"
+                                                           value="true"
+                                                           class="form-check-input"
+                                                           data-field="option-correct"
+                                                           @(Model.Questions[questionIndex].Options[optionIndex].IsCorrect ? "checked" : "") />
+                                                    <input type="hidden"
+                                                           name="Questions[@questionIndex].Options[@optionIndex].IsCorrect"
+                                                           value="false"
+                                                           data-field="option-correct-hidden" />
+                                                    <label class="form-check-label">Верен</label>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2 text-end">
+                                                <button type="button" class="btn btn-outline-danger btn-sm" data-action="remove-option">
+                                                    Премахни
+                                                </button>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="d-flex gap-2 mt-4">
+                <button type="submit" class="btn btn-primary">
+                    @(Model.Id == 0 ? "Създай теста" : "Запази промените")
+                </button>
+                <a asp-action="Index" class="btn btn-outline-secondary">Назад</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        window.initSubjectTopicExamFilters?.({
+            subjectSelector: "#subjectSelect",
+            topicSelector: "#topicSelect",
+            topicsUrl: "@Url.Action("BySubject", "Topics")",
+            topicPlaceholder: "-- Избери тема --",
+            topicEmptyValue: "0"
+        });
+
+        const questionsContainer = document.getElementById("questionsContainer");
+        const addQuestionButton = document.getElementById("addQuestionButton");
+
+        if (!questionsContainer || !addQuestionButton) {
+            return;
+        }
+
+        const createOptionRow = (questionIndex, optionIndex) => `
+            <div class="row g-2 align-items-center mb-2 option-row">
+                <input type="hidden" name="Questions[${questionIndex}].Options[${optionIndex}].Id" value="0" data-field="option-id" />
+
+                <div class="col-md-8">
+                    <input name="Questions[${questionIndex}].Options[${optionIndex}].Text"
+                           class="form-control"
+                           placeholder="Текст на отговора"
+                           data-field="option-text" />
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-check">
+                        <input type="checkbox"
+                               name="Questions[${questionIndex}].Options[${optionIndex}].IsCorrect"
+                               value="true"
+                               class="form-check-input"
+                               data-field="option-correct" />
+                        <input type="hidden"
+                               name="Questions[${questionIndex}].Options[${optionIndex}].IsCorrect"
+                               value="false"
+                               data-field="option-correct-hidden" />
+                        <label class="form-check-label">Верен</label>
+                    </div>
+                </div>
+
+                <div class="col-md-2 text-end">
+                    <button type="button" class="btn btn-outline-danger btn-sm" data-action="remove-option">
+                        Премахни
+                    </button>
+                </div>
+            </div>
+        `;
+
+        const createQuestionCard = (questionIndex) => `
+            <div class="card mb-3 question-card">
+                <div class="card-body">
+                    <input type="hidden" name="Questions[${questionIndex}].Id" value="0" data-field="question-id" />
+
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0" data-role="question-title">Въпрос ${questionIndex + 1}</h5>
+                        <button type="button" class="btn btn-outline-danger btn-sm" data-action="remove-question">
+                            Премахни въпроса
+                        </button>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Текст на въпроса</label>
+                        <textarea name="Questions[${questionIndex}].Text" class="form-control" rows="3" data-field="question-text"></textarea>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input type="hidden" name="Questions[${questionIndex}].IsActive" value="false" data-field="question-active-hidden" />
+                        <input type="checkbox"
+                               name="Questions[${questionIndex}].IsActive"
+                               value="true"
+                               class="form-check-input"
+                               data-field="question-active"
+                               checked />
+                        <label class="form-check-label">Активен въпрос</label>
+                    </div>
+
+                    <div class="border rounded-3 p-3">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0">Отговори</h6>
+                            <button type="button" class="btn btn-outline-secondary btn-sm" data-action="add-option">
+                                Добави отговор
+                            </button>
+                        </div>
+
+                        <div class="options-container">
+                            ${createOptionRow(questionIndex, 0)}
+                            ${createOptionRow(questionIndex, 1)}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+
+        const reindexQuestions = () => {
+            const questionCards = questionsContainer.querySelectorAll(".question-card");
+
+            questionCards.forEach((questionCard, questionIndex) => {
+                const title = questionCard.querySelector('[data-role="question-title"]');
+                const questionId = questionCard.querySelector('[data-field="question-id"]');
+                const questionText = questionCard.querySelector('[data-field="question-text"]');
+                const questionActive = questionCard.querySelector('[data-field="question-active"]');
+                const questionActiveHidden = questionCard.querySelector('[data-field="question-active-hidden"]');
+
+                if (title) title.textContent = `Въпрос ${questionIndex + 1}`;
+                if (questionId) questionId.name = `Questions[${questionIndex}].Id`;
+                if (questionText) questionText.name = `Questions[${questionIndex}].Text`;
+                if (questionActive) questionActive.name = `Questions[${questionIndex}].IsActive`;
+                if (questionActiveHidden) questionActiveHidden.name = `Questions[${questionIndex}].IsActive`;
+
+                const optionRows = questionCard.querySelectorAll(".option-row");
+                optionRows.forEach((optionRow, optionIndex) => {
+                    const optionId = optionRow.querySelector('[data-field="option-id"]');
+                    const optionText = optionRow.querySelector('[data-field="option-text"]');
+                    const optionCorrect = optionRow.querySelector('[data-field="option-correct"]');
+                    const optionCorrectHidden = optionRow.querySelector('[data-field="option-correct-hidden"]');
+
+                    if (optionId) optionId.name = `Questions[${questionIndex}].Options[${optionIndex}].Id`;
+                    if (optionText) optionText.name = `Questions[${questionIndex}].Options[${optionIndex}].Text`;
+                    if (optionCorrect) optionCorrect.name = `Questions[${questionIndex}].Options[${optionIndex}].IsCorrect`;
+                    if (optionCorrectHidden) optionCorrectHidden.name = `Questions[${questionIndex}].Options[${optionIndex}].IsCorrect`;
+                });
+            });
+        };
+
+        addQuestionButton.addEventListener("click", function () {
+            const questionIndex = questionsContainer.querySelectorAll(".question-card").length;
+            questionsContainer.insertAdjacentHTML("beforeend", createQuestionCard(questionIndex));
+        });
+
+        questionsContainer.addEventListener("click", function (event) {
+            const target = event.target;
+
+            if (target.matches('[data-action="remove-question"]')) {
+                target.closest(".question-card")?.remove();
+                reindexQuestions();
+                return;
+            }
+
+            if (target.matches('[data-action="add-option"]')) {
+                const questionCard = target.closest(".question-card");
+                const optionsContainer = questionCard?.querySelector(".options-container");
+                if (!questionCard || !optionsContainer) {
+                    return;
+                }
+
+                const questionIndex = Array.from(questionsContainer.querySelectorAll(".question-card")).indexOf(questionCard);
+                const optionIndex = optionsContainer.querySelectorAll(".option-row").length;
+                optionsContainer.insertAdjacentHTML("beforeend", createOptionRow(questionIndex, optionIndex));
+                reindexQuestions();
+                return;
+            }
+
+            if (target.matches('[data-action="remove-option"]')) {
+                target.closest(".option-row")?.remove();
+                reindexQuestions();
+            }
+        });
+    });
+</script>
